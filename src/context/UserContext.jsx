@@ -112,7 +112,7 @@ export const UserProvider = ({ children }) => {
   
         console.log("Refreshing user access token...");
   
-        const response = await callFirebaseFunction('createAccessToken', { refreshToken: token }, toast);
+        const response = await callFirebaseFunction('refreshTokenAttempt', { refreshToken: token }, toast);
         if (response.success) {
           if (!user) {
             setUser(null);

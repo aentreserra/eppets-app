@@ -6,7 +6,7 @@ export const callFirebaseFunction = async (functionName, data, toast) => {
     const response = result.data;
     return response;
   } catch (error) {
-    console.error('Error calling Firebase function:', error);
+    console.error('Error:', error);
     toast.show('Error inesperado', {type: 'danger'});
     return null;
   }

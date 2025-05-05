@@ -8,6 +8,7 @@ import { UserProvider } from './src/context/UserContext';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { navigationRef } from './src/utils/RootNavigation';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,6 +45,7 @@ export default function App() {
           <UserProvider>
             <NavigationContainer ref={navigationRef}>
               <StackNavigation />
+              <StatusBar style="light" />
             </NavigationContainer>
           </UserProvider>
         </ToastProvider>

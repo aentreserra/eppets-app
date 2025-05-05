@@ -6,7 +6,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 import { emailChecker } from '../../utils/shared';
 import { useToast } from 'react-native-toast-notifications';
-import functions from '@react-native-firebase/functions';
 import { storeItem, storeSecureItem } from '../../utils/storage';
 import { SECURE_STORAGE_KEYS, STORAGE_KEYS } from '../../constants/storageKeys';
 import { useUser } from '../../context/UserContext';

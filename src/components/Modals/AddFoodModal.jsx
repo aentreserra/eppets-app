@@ -1,4 +1,4 @@
-import { View, StyleSheet, Dimensions, TextInput, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native'
 import React, { useState } from 'react'
 import Modal from 'react-native-modal';
 import LatoText from '../Fonts/LatoText';
@@ -28,88 +28,93 @@ const AddFoodModal = ({searchTerm, isVisible, setIsVisible}) => {
       propagateSwipe={true}
       style={styles.modalContainer}
     >
-      <View style={[styles.modalContent, { height: height * 0.75 }]}>
-        <View style={styles.inputContainer}>
-          <LatoText style={styles.modalTitle}>Nombre del alimento: </LatoText>
-          <TextInput
-            placeholder='Ej: Zanahoria'
-            placeholderTextColor="#ADA9A7"
-            value={userInput.foodName}
-            onChangeText={(text) => setUserInput({...userInput, foodName: text})}
-            style={styles.input}
-          />
-        </View>
-        <LatoText style={styles.questionText}>¿Para qué mascotas es adecuado?</LatoText>
-        <View style={styles.checkerContainer}>
-          <Checkbox
-            value={userInput.dog}
-            onValueChange={value => setUserInput({...userInput, dog: value})}
-            color={userInput.dog ? '#458AC3' : undefined}
-            style={styles.checkbox}
-          />
-          <LatoText style={styles.modalTitle}>Apto para Perros</LatoText>
-        </View>
-        <View style={styles.checkerContainer}>
-          <Checkbox
-            value={userInput.cat}
-            onValueChange={value => setUserInput({...userInput, cat: value})}
-            color={userInput.cat ? '#458AC3' : undefined}
-            style={styles.checkbox}
-          />
-          <LatoText style={styles.modalTitle}>Apto para Gatos</LatoText>
-        </View>
-        <View style={styles.checkerContainer}>
-          <Checkbox
-            value={userInput.rabbit}
-            onValueChange={value => setUserInput({...userInput, rabbit: value})}
-            color={userInput.rabbit ? '#458AC3' : undefined}
-            style={styles.checkbox}
-          />
-          <LatoText style={styles.modalTitle}>Apto para Conejos</LatoText>
-        </View>
-        <View style={styles.checkerContainer}>
-          <Checkbox
-            value={userInput.rodent}
-            onValueChange={value => setUserInput({...userInput, rodent: value})}
-            color={userInput.rodent ? '#458AC3' : undefined}
-            style={styles.checkbox}
-          />
-          <LatoText style={styles.modalTitle}>Apto para Roedores</LatoText>
-        </View>
-        <View style={styles.checkerContainer}>
-          <Checkbox
-            value={userInput.fish}
-            onValueChange={value => setUserInput({...userInput, fish: value})}
-            color={userInput.fish ? '#458AC3' : undefined}
-            style={styles.checkbox}
-          />
-          <LatoText style={styles.modalTitle}>Apto para Peces</LatoText>
-        </View>
-        <View style={styles.checkerContainer}>
-          <Checkbox
-            value={userInput.turtle}
-            onValueChange={value => setUserInput({...userInput, turtle: value})}
-            color={userInput.turtle ? '#458AC3' : undefined}
-            style={styles.checkbox}
-          />
-          <LatoText style={styles.modalTitle}>Apto para Tortugas</LatoText>
-        </View>
-        <View style={styles.checkerContainer}>
-          <Checkbox
-            value={userInput.bird}
-            onValueChange={value => setUserInput({...userInput, bird: value})}
-            color={userInput.bird ? '#458AC3' : undefined}
-            style={styles.checkbox}
-          />
-          <LatoText style={styles.modalTitle}>Apto para Aves</LatoText>
-        </View>
-        <TouchableOpacity activeOpacity={0.9} onPress={() => setIsVisible(false)} style={styles.saveButton}>
-          <LatoText style={styles.saveButtonText}>Guardar</LatoText>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.9} onPress={() => setIsVisible(false)}>
-          <LatoText style={styles.closeText}>Cerrar</LatoText>
-        </TouchableOpacity>
-      </View>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={[styles.modalContent, { height: height * 0.75 }]}>
+            <LatoText style={styles.title}>Añadir Alimento</LatoText>
+            <View style={styles.inputContainer}>
+              <LatoText style={styles.modalTitle}>Nombre del alimento: </LatoText>
+              <TextInput
+                placeholder='Ej: Zanahoria'
+                placeholderTextColor="#ADA9A7"
+                value={userInput.foodName}
+                onChangeText={(text) => setUserInput({...userInput, foodName: text})}
+                style={styles.input}
+              />
+            </View>
+            <LatoText style={styles.questionText}>¿Para qué mascotas es adecuado?</LatoText>
+            <View style={styles.checkerContainer}>
+              <Checkbox
+                value={userInput.dog}
+                onValueChange={value => setUserInput({...userInput, dog: value})}
+                color={userInput.dog ? '#458AC3' : undefined}
+                style={styles.checkbox}
+              />
+              <LatoText style={styles.modalTitle}>Apto para Perros</LatoText>
+            </View>
+            <View style={styles.checkerContainer}>
+              <Checkbox
+                value={userInput.cat}
+                onValueChange={value => setUserInput({...userInput, cat: value})}
+                color={userInput.cat ? '#458AC3' : undefined}
+                style={styles.checkbox}
+              />
+              <LatoText style={styles.modalTitle}>Apto para Gatos</LatoText>
+            </View>
+            <View style={styles.checkerContainer}>
+              <Checkbox
+                value={userInput.rabbit}
+                onValueChange={value => setUserInput({...userInput, rabbit: value})}
+                color={userInput.rabbit ? '#458AC3' : undefined}
+                style={styles.checkbox}
+              />
+              <LatoText style={styles.modalTitle}>Apto para Conejos</LatoText>
+            </View>
+            <View style={styles.checkerContainer}>
+              <Checkbox
+                value={userInput.rodent}
+                onValueChange={value => setUserInput({...userInput, rodent: value})}
+                color={userInput.rodent ? '#458AC3' : undefined}
+                style={styles.checkbox}
+              />
+              <LatoText style={styles.modalTitle}>Apto para Roedores</LatoText>
+            </View>
+            <View style={styles.checkerContainer}>
+              <Checkbox
+                value={userInput.fish}
+                onValueChange={value => setUserInput({...userInput, fish: value})}
+                color={userInput.fish ? '#458AC3' : undefined}
+                style={styles.checkbox}
+              />
+              <LatoText style={styles.modalTitle}>Apto para Peces</LatoText>
+            </View>
+            <View style={styles.checkerContainer}>
+              <Checkbox
+                value={userInput.turtle}
+                onValueChange={value => setUserInput({...userInput, turtle: value})}
+                color={userInput.turtle ? '#458AC3' : undefined}
+                style={styles.checkbox}
+              />
+              <LatoText style={styles.modalTitle}>Apto para Tortugas</LatoText>
+            </View>
+            <View style={styles.checkerContainer}>
+              <Checkbox
+                value={userInput.bird}
+                onValueChange={value => setUserInput({...userInput, bird: value})}
+                color={userInput.bird ? '#458AC3' : undefined}
+                style={styles.checkbox}
+              />
+              <LatoText style={styles.modalTitle}>Apto para Aves</LatoText>
+            </View>
+            <TouchableOpacity activeOpacity={0.9} onPress={() => setIsVisible(false)} style={styles.saveButton}>
+              <LatoText style={styles.saveButtonText}>Guardar</LatoText>
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.9} onPress={() => setIsVisible(false)}>
+              <LatoText style={styles.closeText}>Cerrar</LatoText>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   )
 }
@@ -124,6 +129,12 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 20,
+  },
+  title: {
+    fontSize: 19,
+    color: '#191717',
+    textAlign: 'center',
+    marginBottom: 20,
   },
   modalTitle: {
     fontSize: 16,

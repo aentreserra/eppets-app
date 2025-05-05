@@ -5,12 +5,15 @@ import LatoText from '../../components/Fonts/LatoText'
 import DateTimePicker, {useDefaultStyles} from 'react-native-ui-datepicker'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { getTimeStampInHours, getDayName, getMonthName } from '../../utils/shared'
+import AddReminder from '../../components/Modals/AddReminder'
 
 const CalendarScreen = () => {
 
-  const defaultDatePickerStyles = useDefaultStyles();
+  const defaultDatePickerStyles = useDefaultStyles('light');
 
   const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const [isAddReminderVisible, setIsAddReminderVisible] = useState(false);
 
   const [userTodos, setUserTodos] = useState([
     {todoType: 'Vacuna', todoName: 'Vacuna de rabia', todoTimeStamp: new Date("2024-04-25T17:58:00").getTime(), todoDesc: 'Vacuna de rabia para Luna', petIcon: 'https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg', petName: 'Luna', id: 1},
@@ -30,9 +33,13 @@ const CalendarScreen = () => {
 
   return (
     <SafeAreaView style={styles.page}>
+      <AddReminder isVisible={isAddReminderVisible} setIsVisible={setIsAddReminderVisible} defaultDay={selectedDate}/>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <LatoText style={styles.title}>Calendario</LatoText>
+          <TouchableOpacity activeOpacity={0.9} style={styles.roundedButton} onPress={() => setIsAddReminderVisible(true)}>
+            <MaterialCommunityIcons name="plus-circle" size={30} color="#458AC3" />
+          </TouchableOpacity>
         </View>
         <DateTimePicker 
           mode='single'
@@ -41,6 +48,7 @@ const CalendarScreen = () => {
           onChange={({date}) => handleDateChange(date)}
           styles={{
             ...defaultDatePickerStyles,
+            day_label: {color: '#191717', fontFamily: 'Lato-Regular'},
             today: {borderColor: '#458AC3', borderWidth: 1, borderRadius: 15, aspectRatio: 1},
             selected: {backgroundColor: '#458AC3', borderRadius: 15, aspectRatio: 1},
             selected_label: {color: '#FFF', fontFamily: 'Lato-Regular'},
@@ -71,7 +79,7 @@ const CalendarScreen = () => {
                 <MaterialCommunityIcons name="calendar-remove" size={45} color="#555151" />
                 <LatoText style={styles.noDataTitle}>No hay eventos para este día</LatoText>
                 <LatoText style={styles.noDataDesc}>Programa recordatorios de medicación, citas veterinarias o cualquier actividad para tus mascotas.</LatoText>
-                <TouchableOpacity activeOpacity={0.9} >
+                <TouchableOpacity activeOpacity={0.9} onPress={() => setIsAddReminderVisible(true)}>
                   <LatoText style={styles.noDataClick}>¡Agrega uno!</LatoText>
                 </TouchableOpacity>
               </View>
@@ -118,6 +126,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 20,
+  },
+  roundedButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    marginTop: -5,
+    marginRight: 0,
   },
   title: {
     fontSize: 24,

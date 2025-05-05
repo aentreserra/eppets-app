@@ -1,0 +1,1624 @@
+{
+  "dog": [
+    {
+      "name": "Labrador Retriever",
+      "value": "labrador_retriever",
+      "parameters": {
+        "weight": { "min_acceptable": 22, "ideal_min": 25, "ideal_max": 36, "max_acceptable": 40, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 10, "max": 12, "unit": "años" },
+        "temperament": ["Amigable", "Extrovertido", "Activo", "Inteligente"]
+      }
+    },
+    {
+      "name": "Pastor Alemán",
+      "value": "german_shepherd",
+      "parameters": {
+        "weight": { "min_acceptable": 20, "ideal_min": 22, "ideal_max": 40, "max_acceptable": 45, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 9, "max": 13, "unit": "años" },
+        "temperament": ["Leal", "Inteligente", "Protector", "Confiado"]
+      }
+    },
+    {
+      "name": "Golden Retriever",
+      "value": "golden_retriever",
+      "parameters": {
+        "weight": { "min_acceptable": 23, "ideal_min": 25, "ideal_max": 34, "max_acceptable": 38, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 10, "max": 12, "unit": "años" },
+        "temperament": ["Amigable", "Confiable", "Inteligente", "Paciente"]
+      }
+    },
+    {
+      "name": "Bulldog Francés",
+      "value": "french_bulldog",
+      "parameters": {
+        "weight": { "min_acceptable": 7, "ideal_min": 8, "ideal_max": 14, "max_acceptable": 16, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 10, "max": 12, "unit": "años" },
+        "temperament": ["Juguetón", "Afectuoso", "Alerta", "Adaptable"]
+      }
+    },
+    {
+      "name": "Bulldog Inglés",
+      "value": "bulldog",
+      "parameters": {
+        "weight": { "min_acceptable": 16, "ideal_min": 18, "ideal_max": 25, "max_acceptable": 28, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 8, "max": 10, "unit": "años" },
+        "temperament": ["Dócil", "Amigable", "Valiente", "Testarudo"]
+      }
+    },
+    {
+      "name": "Caniche (Estándar/Gigante)",
+      "value": "poodle_standard",
+      "parameters": {
+        "weight": { "min_acceptable": 18, "ideal_min": 20, "ideal_max": 32, "max_acceptable": 36, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 12, "max": 15, "unit": "años" },
+        "temperament": ["Inteligente", "Activo", "Orgulloso", "Entrañable"]
+      }
+    },
+    {
+      "name": "Caniche (Miniatura/Enano)",
+      "value": "poodle_miniature",
+      "parameters": {
+        "weight": { "min_acceptable": 3.5, "ideal_min": 4, "ideal_max": 8, "max_acceptable": 9, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 13, "max": 15, "unit": "años" },
+        "temperament": ["Inteligente", "Activo", "Entrañable"]
+      }
+    },
+    {
+      "name": "Caniche (Toy)",
+      "value": "poodle_toy",
+      "parameters": {
+        "weight": { "min_acceptable": 1.8, "ideal_min": 2, "ideal_max": 4, "max_acceptable": 4.5, "unit": "kg" },
+        "size_category": "Toy",
+        "lifespan": { "min": 13, "max": 15, "unit": "años" },
+        "temperament": ["Inteligente", "Activo", "Entrañable"]
+      }
+    },
+    {
+      "name": "Beagle",
+      "value": "beagle",
+      "parameters": {
+        "weight": { "min_acceptable": 8, "ideal_min": 9, "ideal_max": 11, "max_acceptable": 13, "unit": "kg" },
+        "size_category": "Pequeño/Mediano",
+        "lifespan": { "min": 12, "max": 15, "unit": "años" },
+        "temperament": ["Alegre", "Curioso", "Amigable", "Obstinado"]
+      }
+    },
+    {
+      "name": "Rottweiler",
+      "value": "rottweiler",
+      "parameters": {
+        "weight": { "min_acceptable": 32, "ideal_min": 35, "ideal_max": 60, "max_acceptable": 68, "unit": "kg" },
+        "size_category": "Grande/Gigante",
+        "lifespan": { "min": 8, "max": 10, "unit": "años" },
+        "temperament": ["Leal", "Seguro", "Valiente", "Protector"]
+      }
+    },
+    {
+      "name": "Yorkshire Terrier",
+      "value": "yorkshire_terrier",
+      "parameters": {
+        "weight": { "min_acceptable": 1.8, "ideal_min": 2, "ideal_max": 3.2, "max_acceptable": 3.8, "unit": "kg" },
+        "size_category": "Toy",
+        "lifespan": { "min": 13, "max": 16, "unit": "años" },
+        "temperament": ["Valiente", "Vivaz", "Inteligente", "Independiente"]
+      }
+    },
+    {
+      "name": "Dachshund (Perro Salchicha - Estándar)",
+      "value": "dachshund_standard",
+      "parameters": {
+        "weight": { "min_acceptable": 6, "ideal_min": 7, "ideal_max": 14, "max_acceptable": 16, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 12, "max": 16, "unit": "años" },
+        "temperament": ["Juguetón", "Valiente", "Testarudo", "Curioso"]
+      }
+    },
+    {
+      "name": "Dachshund (Perro Salchicha - Miniatura)",
+      "value": "dachshund_miniature",
+      "parameters": {
+        "weight": { "min_acceptable": 3, "ideal_min": 3.5, "ideal_max": 5, "max_acceptable": 6, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 12, "max": 16, "unit": "años" },
+        "temperament": ["Juguetón", "Valiente", "Testarudo", "Curioso"]
+      }
+    },
+    {
+      "name": "Boxer",
+      "value": "boxer",
+      "parameters": {
+        "weight": { "min_acceptable": 23, "ideal_min": 25, "ideal_max": 32, "max_acceptable": 36, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 10, "max": 12, "unit": "años" },
+        "temperament": ["Juguetón", "Energético", "Leal", "Inteligente"]
+      }
+    },
+    {
+      "name": "Shih Tzu",
+      "value": "shih_tzu",
+      "parameters": {
+        "weight": { "min_acceptable": 3.5, "ideal_min": 4, "ideal_max": 7.5, "max_acceptable": 8.5, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 10, "max": 16, "unit": "años" },
+        "temperament": ["Afectuoso", "Juguetón", "Extrovertido", "Vivaz"]
+      }
+    },
+    {
+      "name": "Dóberman Pinscher",
+      "value": "doberman_pinscher",
+      "parameters": {
+        "weight": { "min_acceptable": 29, "ideal_min": 32, "ideal_max": 45, "max_acceptable": 50, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 10, "max": 13, "unit": "años" },
+        "temperament": ["Leal", "Inteligente", "Alerta", "Valiente"]
+      }
+    },
+    {
+      "name": "Gran Danés (Dogo Alemán)",
+      "value": "great_dane",
+      "parameters": {
+        "weight": { "min_acceptable": 40, "ideal_min": 45, "ideal_max": 90, "max_acceptable": 100, "unit": "kg" },
+        "size_category": "Gigante",
+        "lifespan": { "min": 7, "max": 10, "unit": "años" },
+        "temperament": ["Amigable", "Gentil", "Paciente", "Reservado"]
+      }
+    },
+    {
+      "name": "Husky Siberiano",
+      "value": "siberian_husky",
+      "parameters": {
+        "weight": { "min_acceptable": 14, "ideal_min": 16, "ideal_max": 27, "max_acceptable": 30, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 12, "max": 15, "unit": "años" },
+        "temperament": ["Amigable", "Activo", "Inteligente", "Independiente"]
+      }
+    },
+    {
+      "name": "Pastor Australiano",
+      "value": "australian_shepherd",
+      "parameters": {
+        "weight": { "min_acceptable": 14, "ideal_min": 16, "ideal_max": 32, "max_acceptable": 35, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 13, "max": 15, "unit": "años" },
+        "temperament": ["Inteligente", "Energético", "Leal", "Trabajador"]
+      }
+    },
+    {
+      "name": "Border Collie",
+      "value": "border_collie",
+      "parameters": {
+        "weight": { "min_acceptable": 10, "ideal_min": 12, "ideal_max": 20, "max_acceptable": 23, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 12, "max": 15, "unit": "años" },
+        "temperament": ["Muy Inteligente", "Energético", "Receptivo", "Atlético"]
+      }
+    },
+    {
+      "name": "Chihuahua",
+      "value": "chihuahua",
+      "parameters": {
+        "weight": { "min_acceptable": 1.3, "ideal_min": 1.5, "ideal_max": 3, "max_acceptable": 3.5, "unit": "kg" },
+        "size_category": "Toy",
+        "lifespan": { "min": 14, "max": 16, "unit": "años" },
+        "temperament": ["Vivaz", "Alerta", "Valiente", "Devoto"]
+      }
+    },
+    {
+      "name": "Pomerania",
+      "value": "pomeranian",
+      "parameters": {
+        "weight": { "min_acceptable": 1.2, "ideal_min": 1.4, "ideal_max": 3.2, "max_acceptable": 3.8, "unit": "kg" },
+        "size_category": "Toy",
+        "lifespan": { "min": 12, "max": 16, "unit": "años" },
+        "temperament": ["Vivaz", "Extrovertido", "Inteligente", "Juguetón"]
+      }
+    },
+    {
+      "name": "Cavalier King Charles Spaniel",
+      "value": "cavalier_king_charles_spaniel",
+      "parameters": {
+        "weight": { "min_acceptable": 5, "ideal_min": 5.9, "ideal_max": 8.2, "max_acceptable": 9.5, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 9, "max": 14, "unit": "años" },
+        "temperament": ["Afectuoso", "Amigable", "Paciente", "Sociable"]
+      }
+    },
+    {
+      "name": "Bichón Maltés",
+      "value": "maltese",
+      "parameters": {
+        "weight": { "min_acceptable": 1.5, "ideal_min": 1.8, "ideal_max": 3.2, "max_acceptable": 4, "unit": "kg" },
+        "size_category": "Toy",
+        "lifespan": { "min": 12, "max": 15, "unit": "años" },
+        "temperament": ["Juguetón", "Amable", "Vivaz", "Afectuoso"]
+      }
+    },
+    {
+      "name": "Jack Russell Terrier",
+      "value": "jack_russell_terrier",
+      "parameters": {
+        "weight": { "min_acceptable": 4.5, "ideal_min": 5, "ideal_max": 7, "max_acceptable": 8, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 13, "max": 16, "unit": "años" },
+        "temperament": ["Energético", "Inteligente", "Valiente", "Vocal"]
+      }
+    },
+    {
+      "name": "San Bernardo",
+      "value": "saint_bernard",
+      "parameters": {
+        "weight": { "min_acceptable": 50, "ideal_min": 55, "ideal_max": 90, "max_acceptable": 100, "unit": "kg" },
+        "size_category": "Gigante",
+        "lifespan": { "min": 8, "max": 10, "unit": "años" },
+        "temperament": ["Gentil", "Amigable", "Paciente", "Vigilante"]
+      }
+    },
+    {
+      "name": "Galgo Inglés",
+      "value": "greyhound",
+      "parameters": {
+        "weight": { "min_acceptable": 24, "ideal_min": 27, "ideal_max": 40, "max_acceptable": 45, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 10, "max": 13, "unit": "años" },
+        "temperament": ["Gentil", "Independiente", "Tranquilo (en casa)", "Atlético"]
+      }
+    },
+    {
+      "name": "Mestizo / Cruce (Pequeño)",
+      "value": "mixed_small",
+      "parameters": {
+        "weight": { "min_acceptable": 2.5, "ideal_min": 3, "ideal_max": 10, "max_acceptable": 12, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 13, "max": 18, "unit": "años" },
+        "temperament": ["Variable"]
+      }
+    },
+    {
+      "name": "Mestizo / Cruce (Mediano)",
+      "value": "mixed_medium",
+      "parameters": {
+        "weight": { "min_acceptable": 9, "ideal_min": 11, "ideal_max": 25, "max_acceptable": 29, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 11, "max": 16, "unit": "años" },
+        "temperament": ["Variable"]
+      }
+    },
+    {
+      "name": "Mestizo / Cruce (Grande)",
+      "value": "mixed_large",
+      "parameters": {
+        "weight": { "min_acceptable": 23, "ideal_min": 26, "ideal_max": 45, "max_acceptable": 50, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 9, "max": 13, "unit": "años" },
+        "temperament": ["Variable"]
+      }
+    }
+  ],
+  "cat": [
+    {
+      "name": "Doméstico Común (Pelo Corto)",
+      "value": "domestic_shorthair",
+      "parameters": {
+        "weight": { "min_acceptable": 3.0, "ideal_min": 3.5, "ideal_max": 5.5, "max_acceptable": 6.5, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 12, "max": 18, "unit": "años" },
+        "temperament": ["Variable", "Adaptable"]
+      }
+    },
+    {
+      "name": "Doméstico Común (Pelo Largo)",
+      "value": "domestic_longhair",
+      "parameters": {
+        "weight": { "min_acceptable": 3.0, "ideal_min": 3.5, "ideal_max": 6.0, "max_acceptable": 7.0, "unit": "kg" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 12, "max": 18, "unit": "años" },
+        "temperament": ["Variable", "Generalmente tranquilo"]
+      }
+    },
+    {
+      "name": "Común Europeo",
+      "value": "european_shorthair",
+      "parameters": {
+        "weight": { "min_acceptable": 3.0, "ideal_min": 3.5, "ideal_max": 6.5, "max_acceptable": 7.5, "unit": "kg" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 14, "max": 20, "unit": "años" },
+        "temperament": ["Inteligente", "Juguetón", "Adaptable", "Territorial"]
+      }
+    },
+    {
+      "name": "Siamés",
+      "value": "siamese",
+      "parameters": {
+        "weight": { "min_acceptable": 2.0, "ideal_min": 2.5, "ideal_max": 5.0, "max_acceptable": 5.8, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 12, "max": 16, "unit": "años" },
+        "temperament": ["Vocal", "Afectuoso", "Inteligente", "Exigente"]
+      }
+    },
+    {
+      "name": "Persa",
+      "value": "persian",
+      "parameters": {
+        "weight": { "min_acceptable": 2.5, "ideal_min": 3.0, "ideal_max": 6.0, "max_acceptable": 7.0, "unit": "kg" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 10, "max": 15, "unit": "años" },
+        "temperament": ["Tranquilo", "Dulce", "Discreto", "Afectuoso"]
+      }
+    },
+    {
+      "name": "Maine Coon",
+      "value": "maine_coon",
+      "parameters": {
+        "weight": { "min_acceptable": 3.5, "ideal_min": 4.0, "ideal_max": 11.0, "max_acceptable": 12.5, "unit": "kg" },
+        "size_category": "Grande/Gigante",
+        "lifespan": { "min": 10, "max": 13, "unit": "años" },
+        "temperament": ["Gentil", "Juguetón", "Sociable", "Inteligente"]
+      }
+    },
+    {
+      "name": "Ragdoll",
+      "value": "ragdoll",
+      "parameters": {
+        "weight": { "min_acceptable": 4.0, "ideal_min": 4.5, "ideal_max": 9.0, "max_acceptable": 10.5, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 12, "max": 17, "unit": "años" },
+        "temperament": ["Dócil", "Tranquilo", "Afectuoso", "Relajado"]
+      }
+    },
+    {
+      "name": "Bengalí (Gato de Bengala)",
+      "value": "bengal",
+      "parameters": {
+        "weight": { "min_acceptable": 3.0, "ideal_min": 3.5, "ideal_max": 7.0, "max_acceptable": 8.0, "unit": "kg" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 12, "max": 16, "unit": "años" },
+        "temperament": ["Activo", "Curioso", "Inteligente", "Juguetón"]
+      }
+    },
+    {
+      "name": "Sphynx (Gato Egipcio)",
+      "value": "sphynx",
+      "parameters": {
+        "weight": { "min_acceptable": 2.5, "ideal_min": 3.0, "ideal_max": 5.5, "max_acceptable": 6.5, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 12, "max": 15, "unit": "años" },
+        "temperament": ["Extrovertido", "Afectuoso", "Curioso", "Dependiente del calor"]
+      }
+    },
+    {
+      "name": "British Shorthair (Británico de Pelo Corto)",
+      "value": "british_shorthair",
+      "parameters": {
+        "weight": { "min_acceptable": 3.5, "ideal_min": 4.0, "ideal_max": 8.0, "max_acceptable": 9.0, "unit": "kg" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 12, "max": 17, "unit": "años" },
+        "temperament": ["Tranquilo", "Reservado", "Leal", "Independiente"]
+      }
+    },
+    {
+      "name": "Abisinio",
+      "value": "abyssinian",
+      "parameters": {
+        "weight": { "min_acceptable": 2.0, "ideal_min": 2.5, "ideal_max": 4.5, "max_acceptable": 5.3, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 12, "max": 15, "unit": "años" },
+        "temperament": ["Activo", "Inteligente", "Curioso", "Juguetón"]
+      }
+    },
+    {
+      "name": "Scottish Fold (Fold Escocés)",
+      "value": "scottish_fold",
+      "parameters": {
+        "weight": { "min_acceptable": 2.5, "ideal_min": 3.0, "ideal_max": 6.0, "max_acceptable": 7.0, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 11, "max": 14, "unit": "años" },
+        "temperament": ["Dulce", "Tranquilo", "Adaptable", "Afectuoso"]
+      }
+    },
+    {
+      "name": "Birmano (Sagrado de Birmania)",
+      "value": "birman",
+      "parameters": {
+        "weight": { "min_acceptable": 3.0, "ideal_min": 3.5, "ideal_max": 6.5, "max_acceptable": 7.5, "unit": "kg" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 12, "max": 16, "unit": "años" },
+        "temperament": ["Gentil", "Afectuoso", "Sociable", "Tranquilo"]
+      }
+    },
+    {
+      "name": "Oriental (Pelo Corto/Largo)",
+      "value": "oriental_shorthair_longhair",
+      "parameters": {
+        "weight": { "min_acceptable": 2.0, "ideal_min": 2.5, "ideal_max": 5.0, "max_acceptable": 5.8, "unit": "kg" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 12, "max": 15, "unit": "años" },
+        "temperament": ["Inteligente", "Curioso", "Vocal", "Afectuoso"]
+      }
+    },
+    {
+      "name": "Exótico (Pelo Corto)",
+      "value": "exotic_shorthair",
+      "parameters": {
+        "weight": { "min_acceptable": 3.0, "ideal_min": 3.5, "ideal_max": 6.0, "max_acceptable": 7.0, "unit": "kg" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 10, "max": 15, "unit": "años" },
+        "temperament": ["Dulce", "Tranquilo", "Juguetón", "Afectuoso"]
+      }
+    },
+    {
+      "name": "Azul Ruso",
+      "value": "russian_blue",
+      "parameters": {
+        "weight": { "min_acceptable": 2.5, "ideal_min": 3.0, "ideal_max": 5.5, "max_acceptable": 6.5, "unit": "kg"},
+        "size_category": "Mediano",
+        "lifespan": { "min": 15, "max": 20, "unit": "años" },
+        "temperament": ["Gentil", "Reservado", "Leal", "Tranquilo"]
+      }
+    },
+    {
+      "name": "Siberiano",
+      "value": "siberian",
+      "parameters": {
+        "weight": { "min_acceptable": 3.5, "ideal_min": 4.0, "ideal_max": 9.0, "max_acceptable": 10.5, "unit": "kg"},
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 11, "max": 15, "unit": "años" },
+        "temperament": ["Afectuoso", "Juguetón", "Inteligente", "Ágil"]
+      }
+    },
+    {
+      "name": "Noruego del Bosque",
+      "value": "norwegian_forest_cat",
+      "parameters": {
+        "weight": { "min_acceptable": 3.5, "ideal_min": 4.0, "ideal_max": 9.0, "max_acceptable": 10.5, "unit": "kg"},
+        "size_category": "Grande",
+        "lifespan": { "min": 14, "max": 16, "unit": "años" },
+        "temperament": ["Independiente", "Amigable", "Robusto", "Buen trepador"]
+      }
+    }
+  ],
+  "bird": [
+    {
+      "name": "Periquito Australiano (Budgerigar)",
+      "value": "budgerigar",
+      "parameters": {
+        "weight": { "min_acceptable": 22, "ideal_min": 25, "ideal_max": 40, "max_acceptable": 50, "unit": "g" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 5, "max": 10, "unit": "años" },
+        "origin_climate": "Árido/Semiárido (Australia)",
+        "primary_diet_type": "Granívoro"
+      }
+    },
+    {
+      "name": "Ninfa (Carolina / Cockatiel)",
+      "value": "cockatiel",
+      "parameters": {
+        "weight": { "min_acceptable": 65, "ideal_min": 75, "ideal_max": 125, "max_acceptable": 140, "unit": "g" },
+        "size_category": "Pequeño/Mediano",
+        "lifespan": { "min": 15, "max": 25, "unit": "años" },
+        "origin_climate": "Árido/Semiárido (Australia)",
+        "primary_diet_type": "Granívoro"
+      }
+    },
+    {
+      "name": "Agapornis (Inseparable)",
+      "value": "lovebird_generic",
+      "parameters": {
+        "weight": { "min_acceptable": 35, "ideal_min": 40, "ideal_max": 65, "max_acceptable": 75, "unit": "g" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 10, "max": 15, "unit": "años" },
+        "origin_climate": "Tropical/Subtropical (África/Madagascar)",
+        "primary_diet_type": "Granívoro/Frugívoro"
+      }
+    },
+    {
+      "name": "Canario",
+      "value": "canary",
+      "parameters": {
+        "weight": { "min_acceptable": 13, "ideal_min": 15, "ideal_max": 30, "max_acceptable": 35, "unit": "g" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 8, "max": 12, "unit": "años" },
+        "origin_climate": "Subtropical (Islas Canarias - Atlántico)",
+        "primary_diet_type": "Granívoro"
+      }
+    },
+    {
+      "name": "Diamante Mandarín (Cebra)",
+      "value": "zebra_finch",
+      "parameters": {
+        "weight": { "min_acceptable": 10, "ideal_min": 12, "ideal_max": 20, "max_acceptable": 24, "unit": "g" },
+        "size_category": "Muy Pequeño",
+        "lifespan": { "min": 3, "max": 5, "unit": "años" },
+        "origin_climate": "Árido/Semiárido (Australia)",
+        "primary_diet_type": "Granívoro"
+      }
+    },
+    {
+      "name": "Loro Gris Africano (Yaco)",
+      "value": "african_grey_parrot",
+      "parameters": {
+        "weight": { "min_acceptable": 350, "ideal_min": 380, "ideal_max": 550, "max_acceptable": 600, "unit": "g" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 40, "max": 60, "unit": "años" },
+        "origin_climate": "Tropical Húmedo (África Central/Occidental)",
+        "primary_diet_type": "Frugívoro/Granívoro"
+      }
+    },
+    {
+      "name": "Loro Amazonas (Ej. Frente Azul, Nuca Amarilla)",
+      "value": "amazon_parrot_generic",
+      "parameters": {
+        "weight": { "min_acceptable": 270, "ideal_min": 300, "ideal_max": 650, "max_acceptable": 720, "unit": "g" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 40, "max": 70, "unit": "años" },
+        "origin_climate": "Tropical/Subtropical (América Central/Sur)",
+        "primary_diet_type": "Frugívoro/Granívoro/Omnívoro"
+      }
+    },
+    {
+      "name": "Cacatúa (Ej. Alba, Galah, Sulphurea)",
+      "value": "cockatoo_generic",
+      "parameters": {
+        "weight": { "min_acceptable": 250, "ideal_min": 300, "ideal_max": 1000, "max_acceptable": 1150, "unit": "g" },
+        "size_category": "Mediano a Muy Grande",
+        "lifespan": { "min": 40, "max": 80, "unit": "años" },
+        "origin_climate": "Variable (Australia, Indonesia - Tropical a Árido)",
+        "primary_diet_type": "Granívoro/Frugívoro/Omnívoro"
+      }
+    },
+    {
+      "name": "Guacamayo",
+      "value": "macaw_generic",
+      "parameters": {
+        "weight": { "min_acceptable": 250, "ideal_min": 300, "ideal_max": 1700, "max_acceptable": 1900, "unit": "g" },
+        "size_category": "Grande a Muy Grande",
+        "lifespan": { "min": 50, "max": 80, "unit": "años" },
+        "origin_climate": "Tropical Húmedo (América Central/Sur)",
+        "primary_diet_type": "Frugívoro/Granívoro"
+      }
+    },
+    {
+      "name": "Aratinga / Cotorra",
+      "value": "conure_generic",
+      "parameters": {
+        "weight": { "min_acceptable": 50, "ideal_min": 60, "ideal_max": 300, "max_acceptable": 340, "unit": "g" },
+        "size_category": "Pequeño a Mediano",
+        "lifespan": { "min": 20, "max": 30, "unit": "años" },
+        "origin_climate": "Tropical/Subtropical (América Central/Sur)",
+        "primary_diet_type": "Frugívoro/Granívoro/Omnívoro"
+      }
+    },
+    {
+      "name": "Cotorra Argentina (Quaker Parrot)",
+      "value": "quaker_parrot",
+      "parameters": {
+        "weight": { "min_acceptable": 80, "ideal_min": 90, "ideal_max": 140, "max_acceptable": 160, "unit": "g" },
+        "size_category": "Pequeño/Mediano",
+        "lifespan": { "min": 20, "max": 30, "unit": "años" },
+        "origin_climate": "Templado/Subtropical (América del Sur)",
+        "primary_diet_type": "Granívoro/Frugívoro"
+      }
+    },
+    {
+      "name": "Loro Eclectus",
+      "value": "eclectus_parrot",
+      "parameters": {
+        "weight": { "min_acceptable": 320, "ideal_min": 350, "ideal_max": 550, "max_acceptable": 600, "unit": "g" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 30, "max": 50, "unit": "años" },
+        "origin_climate": "Tropical Húmedo (Islas Salomón, Nueva Guinea, Australia)",
+        "primary_diet_type": "Principalmente Frugívoro/Nectarívoro"
+      }
+    },
+    {
+      "name": "Rosella",
+      "value": "rosella_generic",
+      "parameters": {
+        "weight": { "min_acceptable": 80, "ideal_min": 90, "ideal_max": 150, "max_acceptable": 170, "unit": "g"},
+        "size_category": "Mediano",
+        "lifespan": { "min": 15, "max": 20, "unit": "años" },
+        "origin_climate": "Templado/Semiárido (Australia)",
+        "primary_diet_type": "Granívoro/Frugívoro"
+      }
+    }
+  ],
+  "fish": [
+    {
+      "name": "Pez Dorado Común / Cometa",
+      "value": "common_goldfish",
+      "parameters": {
+        "adult_length": { "min": 15, "max": 30, "unit": "cm" },
+        "min_tank_size": { "volume": 75, "unit": "litres" },
+        "temperature": { "ideal_min": 18, "ideal_max": 22, "unit": "°C" },
+        "ph": { "ideal_min": 6.5, "ideal_max": 7.8 },
+        "temperament": ["Pacífico", "Social", "Gran productor de desechos"],
+        "diet_type": "Omnívoro",
+        "lifespan": { "min": 10, "max": 15, "unit": "años" }
+      }
+    },
+    {
+      "name": "Pez Dorado Oranda / Cabeza de León",
+      "value": "fancy_goldfish",
+      "parameters": {
+        "adult_length": { "min": 15, "max": 25, "unit": "cm" },
+        "min_tank_size": { "volume": 40, "unit": "litres" },
+        "temperature": { "ideal_min": 18, "ideal_max": 23, "unit": "°C" },
+        "ph": { "ideal_min": 6.5, "ideal_max": 7.8 },
+        "temperament": ["Pacífico", "Lento", "Sensible a mala calidad del agua"],
+        "diet_type": "Omnívoro",
+        "lifespan": { "min": 10, "max": 15, "unit": "años" }
+      }
+    },
+    {
+      "name": "Pez Betta (Luchador de Siam)",
+      "value": "betta_splendens",
+      "parameters": {
+        "adult_length": { "min": 5, "max": 7, "unit": "cm" },
+        "min_tank_size": { "volume": 15, "unit": "litres" },
+        "temperature": { "ideal_min": 24, "ideal_max": 28, "unit": "°C" },
+        "ph": { "ideal_min": 6.5, "ideal_max": 7.5 },
+        "temperament": ["Agresivo (machos entre sí)", "Territorial", "Puede ir en comunitario con peces tranquilos sin aletas largas"],
+        "diet_type": "Carnívoro (Insectívoro)",
+        "lifespan": { "min": 2, "max": 4, "unit": "años" }
+      }
+    },
+    {
+      "name": "Guppy",
+      "value": "guppy",
+      "parameters": {
+        "adult_length": { "min": 3, "max": 6, "unit": "cm" },
+        "min_tank_size": { "volume": 20, "unit": "litres" },
+        "temperature": { "ideal_min": 22, "ideal_max": 28, "unit": "°C" },
+        "ph": { "ideal_min": 6.8, "ideal_max": 7.8 },
+        "temperament": ["Muy pacífico", "Comunitario", "Prolífico (vivíparo)"],
+        "diet_type": "Omnívoro",
+        "lifespan": { "min": 1, "max": 3, "unit": "años" }
+      }
+    },
+    {
+      "name": "Platy",
+      "value": "platy",
+      "parameters": {
+        "adult_length": { "min": 4, "max": 7, "unit": "cm" },
+        "min_tank_size": { "volume": 40, "unit": "litres" },
+        "temperature": { "ideal_min": 20, "ideal_max": 26, "unit": "°C" },
+        "ph": { "ideal_min": 7.0, "ideal_max": 8.2 },
+        "temperament": ["Pacífico", "Comunitario", "Vivíparo"],
+        "diet_type": "Omnívoro (con componente vegetal)",
+        "lifespan": { "min": 2, "max": 3, "unit": "años" }
+      }
+    },
+    {
+      "name": "Molly",
+      "value": "molly",
+      "parameters": {
+        "adult_length": { "min": 5, "max": 12, "unit": "cm" },
+        "min_tank_size": { "volume": 60, "unit": "litres" },
+        "temperature": { "ideal_min": 24, "ideal_max": 28, "unit": "°C" },
+        "ph": { "ideal_min": 7.5, "ideal_max": 8.5 },
+        "temperament": ["Pacífico", "Comunitario", "Vivíparo"],
+        "diet_type": "Principalmente Herbívoro/Omnívoro",
+        "lifespan": { "min": 3, "max": 5, "unit": "años" }
+      }
+    },
+    {
+      "name": "Tetra Neón",
+      "value": "neon_tetra",
+      "parameters": {
+        "adult_length": { "min": 2.5, "max": 4, "unit": "cm" },
+        "min_tank_size": { "volume": 40, "unit": "litres" },
+        "temperature": { "ideal_min": 21, "ideal_max": 25, "unit": "°C" },
+        "ph": { "ideal_min": 5.5, "ideal_max": 7.0 },
+        "temperament": ["Muy pacífico", "Cardumen", "Comunitario"],
+        "diet_type": "Omnívoro (microdepredador)",
+        "lifespan": { "min": 3, "max": 5, "unit": "años" }
+      }
+    },
+    {
+      "name": "Tetra Cardenal",
+      "value": "cardinal_tetra",
+      "parameters": {
+        "adult_length": { "min": 4, "max": 5, "unit": "cm" },
+        "min_tank_size": { "volume": 60, "unit": "litres" },
+        "temperature": { "ideal_min": 23, "ideal_max": 28, "unit": "°C" },
+        "ph": { "ideal_min": 5.0, "ideal_max": 6.5 },
+        "temperament": ["Muy pacífico", "Cardumen", "Comunitario"],
+        "diet_type": "Omnívoro (microdepredador)",
+        "lifespan": { "min": 4, "max": 5, "unit": "años" }
+      }
+    },
+    {
+      "name": "Corydora Bronce / Aeneus",
+      "value": "corydoras_aeneus",
+      "parameters": {
+        "adult_length": { "min": 5, "max": 7, "unit": "cm" },
+        "min_tank_size": { "volume": 40, "unit": "litres" },
+        "temperature": { "ideal_min": 22, "ideal_max": 26, "unit": "°C" },
+        "ph": { "ideal_min": 6.0, "ideal_max": 7.5 },
+        "temperament": ["Muy pacífico", "Grupo", "De fondo", "Necesita sustrato suave"],
+        "diet_type": "Omnívoro (detritívoro)",
+        "lifespan": { "min": 5, "max": 8, "unit": "años" }
+      }
+    },
+    {
+      "name": "Corydora Panda",
+      "value": "corydoras_panda",
+      "parameters": {
+        "adult_length": { "min": 4, "max": 5, "unit": "cm" },
+        "min_tank_size": { "volume": 40, "unit": "litres" },
+        "temperature": { "ideal_min": 20, "ideal_max": 25, "unit": "°C" },
+        "ph": { "ideal_min": 6.0, "ideal_max": 7.2 },
+        "temperament": ["Muy pacífico", "Grupo", "De fondo", "Necesita sustrato suave"],
+        "diet_type": "Omnívoro (detritívoro)",
+        "lifespan": { "min": 3, "max": 5, "unit": "años" }
+      }
+    },
+    {
+      "name": "Ancistrus (Pleco de Cerda)",
+      "value": "bristlenose_pleco",
+      "parameters": {
+        "adult_length": { "min": 10, "max": 15, "unit": "cm" },
+        "min_tank_size": { "volume": 75, "unit": "litres" },
+        "temperature": { "ideal_min": 23, "ideal_max": 27, "unit": "°C" },
+        "ph": { "ideal_min": 6.5, "ideal_max": 7.5 },
+        "temperament": ["Pacífico", "De fondo", "Puede ser territorial con otros plecos", "Necesita madera"],
+        "diet_type": "Principalmente Herbívoro (Aufwuchs)",
+        "lifespan": { "min": 5, "max": 10, "unit": "años" }
+      }
+    },
+    {
+      "name": "Pez Ángel (Escalar)",
+      "value": "angelfish_scalare",
+      "parameters": {
+        "adult_length": { "min": 12, "max": 15, "unit": "cm" },
+        "min_tank_size": { "volume": 100, "unit": "litres" },
+        "temperature": { "ideal_min": 24, "ideal_max": 28, "unit": "°C" },
+        "ph": { "ideal_min": 6.0, "ideal_max": 7.4 },
+        "temperament": ["Semi-agresivo", "Territorial (especialmente parejas)", "Puede comer peces pequeños (neones)", "Jerárquico"],
+        "diet_type": "Omnívoro",
+        "lifespan": { "min": 8, "max": 10, "unit": "años" }
+      }
+    },
+    {
+      "name": "Pez Disco",
+      "value": "discus_fish",
+      "parameters": {
+        "adult_length": { "min": 15, "max": 20, "unit": "cm" },
+        "min_tank_size": { "volume": 200, "unit": "litres" },
+        "temperature": { "ideal_min": 28, "ideal_max": 31, "unit": "°C" },
+        "ph": { "ideal_min": 5.5, "ideal_max": 6.5 },
+        "temperament": ["Pacífico", "Jerárquico", "Sensible al estrés y calidad del agua", "Mantener en grupo"],
+        "diet_type": "Carnívoro/Omnívoro (dieta de alta calidad)",
+        "lifespan": { "min": 10, "max": 15, "unit": "años" }
+      }
+    },
+    {
+      "name": "Pez Payaso (Ocellaris)",
+      "value": "ocellaris_clownfish",
+      "parameters": {
+        "adult_length": { "min": 7, "max": 11, "unit": "cm" },
+        "min_tank_size": { "volume": 75, "unit": "litres" },
+        "temperature": { "ideal_min": 24, "ideal_max": 27, "unit": "°C" },
+        "ph": { "ideal_min": 8.1, "ideal_max": 8.4 },
+        "salinity": { "ideal_min": 1.023, "ideal_max": 1.026, "unit": "sg"},
+        "temperament": ["Pacífico", "Puede formar simbiosis con anémonas", "Territorial alrededor de su anémona", "Criado en cautividad disponible"],
+        "diet_type": "Omnívoro",
+        "lifespan": { "min": 6, "max": 10, "unit": "años" }
+      }
+    }
+  ],
+  "rabbit": [
+    {
+      "name": "Netherland Dwarf (Enano Neerlandés)",
+      "value": "netherland_dwarf",
+      "parameters": {
+        "weight": { "min_acceptable": 0.8, "ideal_min": 0.9, "ideal_max": 1.1, "max_acceptable": 1.3, "unit": "kg" },
+        "size_category": "Enano",
+        "lifespan": { "min": 7, "max": 12, "unit": "años" },
+        "temperament": ["Vivaz", "Curioso", "A veces nervioso/tímido", "Energético"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Holland Lop (Belier Enano Holandés)",
+      "value": "holland_lop",
+      "parameters": {
+        "weight": { "min_acceptable": 0.8, "ideal_min": 1.0, "ideal_max": 1.8, "max_acceptable": 2.1, "unit": "kg" },
+        "size_category": "Enano",
+        "lifespan": { "min": 7, "max": 12, "unit": "años" },
+        "temperament": ["Dócil", "Amigable", "Relajado", "Bueno con niños (supervisado)"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Mini Lop (Belier Miniatura)",
+      "value": "mini_lop",
+      "parameters": {
+        "weight": { "min_acceptable": 1.7, "ideal_min": 2.0, "ideal_max": 3.0, "max_acceptable": 3.4, "unit": "kg" },
+        "size_category": "Pequeño/Mediano",
+        "lifespan": { "min": 7, "max": 10, "unit": "años" },
+        "temperament": ["Amigable", "Curioso", "Generalmente tranquilo"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Mini Rex",
+      "value": "mini_rex",
+      "parameters": {
+        "weight": { "min_acceptable": 1.5, "ideal_min": 1.7, "ideal_max": 2.1, "max_acceptable": 2.4, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 8, "max": 11, "unit": "años" },
+        "temperament": ["Calmado", "Amigable", "Inteligente", "Disfruta la atención"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Rex (Estándar)",
+      "value": "rex_standard",
+      "parameters": {
+        "weight": { "min_acceptable": 3.0, "ideal_min": 3.4, "ideal_max": 4.8, "max_acceptable": 5.3, "unit": "kg" },
+        "size_category": "Mediano/Grande",
+        "lifespan": { "min": 6, "max": 10, "unit": "años" },
+        "temperament": ["Generalmente dócil", "Inteligente", "Activo", "A veces maternal (hembras)"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Dutch (Holandés)",
+      "value": "dutch_rabbit",
+      "parameters": {
+        "weight": { "min_acceptable": 1.8, "ideal_min": 2.0, "ideal_max": 2.5, "max_acceptable": 2.8, "unit": "kg" },
+        "size_category": "Pequeño/Mediano",
+        "lifespan": { "min": 5, "max": 10, "unit": "años" },
+        "temperament": ["Amigable", "Tranquilo", "Fácil de manejar", "Inteligente"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Lionhead (Cabeza de León)",
+      "value": "lionhead",
+      "parameters": {
+        "weight": { "min_acceptable": 0.9, "ideal_min": 1.1, "ideal_max": 1.7, "max_acceptable": 2.0, "unit": "kg" },
+        "size_category": "Pequeño",
+        "lifespan": { "min": 7, "max": 10, "unit": "años" },
+        "temperament": ["Amigable", "Juguetón", "Sociable", "Necesita cepillado (melena)"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "English Lop (Belier Inglés)",
+      "value": "english_lop",
+      "parameters": {
+        "weight": { "min_acceptable": 3.5, "ideal_min": 4.0, "ideal_max": 5.5, "max_acceptable": 6.2, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 5, "max": 9, "unit": "años" },
+        "temperament": ["Muy dócil", "Relajado", "Perezoso", "Necesita cuidado de orejas"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "French Lop (Belier Francés)",
+      "value": "french_lop",
+      "parameters": {
+        "weight": { "min_acceptable": 4.0, "ideal_min": 4.5, "ideal_max": 6.5, "max_acceptable": 7.5, "unit": "kg" },
+        "size_category": "Grande/Gigante",
+        "lifespan": { "min": 5, "max": 8, "unit": "años" },
+        "temperament": ["Dócil", "Amigable", "Relajado", "Bueno como mascota familiar"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Californian (Californiano)",
+      "value": "californian_rabbit",
+      "parameters": {
+        "weight": { "min_acceptable": 3.2, "ideal_min": 3.6, "ideal_max": 4.8, "max_acceptable": 5.3, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 7, "max": 10, "unit": "años" },
+        "temperament": ["Generalmente tranquilo", "Tímido al principio", "Buena madre"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "New Zealand White (Blanco de Nueva Zelanda)",
+      "value": "new_zealand_white",
+      "parameters": {
+        "weight": { "min_acceptable": 3.5, "ideal_min": 4.0, "ideal_max": 5.5, "max_acceptable": 6.0, "unit": "kg" },
+        "size_category": "Grande",
+        "lifespan": { "min": 7, "max": 10, "unit": "años" },
+        "temperament": ["Dócil", "Tranquilo", "Resistente"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Flemish Giant (Gigante de Flandes)",
+      "value": "flemish_giant",
+      "parameters": {
+        "weight": { "min_acceptable": 5.0, "ideal_min": 6.0, "ideal_max": 10.0, "max_acceptable": 11.5, "unit": "kg" },
+        "size_category": "Gigante",
+        "lifespan": { "min": 5, "max": 8, "unit": "años" },
+        "temperament": ["Muy dócil", "Gentil", "Relajado", "Necesita mucho espacio"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    },
+    {
+      "name": "Conejo Común / Mestizo",
+      "value": "mixed_breed_rabbit",
+      "parameters": {
+        "weight": { "min_acceptable": 1.2, "ideal_min": 1.5, "ideal_max": 3.5, "max_acceptable": 4.2, "unit": "kg"},
+        "size_category": "Variable (Pequeño a Mediano más común)",
+        "lifespan": { "min": 7, "max": 12, "unit": "años" },
+        "temperament": ["Variable"],
+        "primary_diet_type": "Herbívoro (Heno > Pienso > Vegetales)"
+      }
+    }
+  ],
+  "rodent": [
+    {
+      "name": "Hámster Sirio (Dorado)",
+      "value": "syrian_hamster",
+      "parameters": {
+        "weight": { "min_acceptable": 85, "ideal_min": 100, "ideal_max": 180, "max_acceptable": 210, "unit": "g" },
+        "size_category": "Mediano (para hámster)",
+        "lifespan": { "min": 2, "max": 3, "unit": "años" },
+        "social_needs": ["Estrictamente Solitario (después de las 8-10 semanas)"],
+        "primary_diet_type": "Omnívoro/Granívoro",
+        "housing_notes": ["Jaula grande (mín. 80x50cm base)", "Sustrato profundo (15cm+) para excavar", "Rueda sólida grande (28cm+ diámetro)", "Juguetes para roer", "Evitar tubos estrechos", "Temperatura ambiente estable (18-24°C)"]
+      }
+    },
+    {
+      "name": "Hámster Enano Ruso (Campbell)",
+      "value": "campbells_dwarf_hamster",
+      "parameters": {
+        "weight": { "min_acceptable": 25, "ideal_min": 30, "ideal_max": 50, "max_acceptable": 65, "unit": "g" },
+        "size_category": "Pequeño (Enano)",
+        "lifespan": { "min": 1.5, "max": 2.5, "unit": "años" },
+        "social_needs": ["Pueden vivir en parejas/grupos mismo sexo (introducción cuidadosa y temprana)", "Propensos a peleas si no compatibles"],
+        "primary_diet_type": "Omnívoro/Granívoro",
+        "housing_notes": ["Jaula/Tanque espacioso (mín. 60x40cm base)", "Sustrato profundo", "Rueda sólida (20cm+ diámetro)", "Baño de arena esencial", "Juguetes para roer", "Propensos a diabetes (evitar azúcares)"]
+      }
+    },
+    {
+      "name": "Hámster Enano de Roborovski",
+      "value": "roborovski_dwarf_hamster",
+      "parameters": {
+        "weight": { "min_acceptable": 15, "ideal_min": 20, "ideal_max": 35, "max_acceptable": 45, "unit": "g" },
+        "size_category": "Muy Pequeño (Enano)",
+        "lifespan": { "min": 2, "max": 3, "unit": "años" },
+        "social_needs": ["Pueden vivir en parejas/grupos mismo sexo (introducción cuidadosa)", "Muy rápidos y activos"],
+        "primary_diet_type": "Omnívoro/Granívoro",
+        "housing_notes": ["Tanque preferible (evitar barrotes estrechos)", "Mucho espacio (mín. 60x40cm base)", "Sustrato profundo", "Rueda sólida (20cm+ diámetro)", "Baño de arena grande esencial", "Muy rápidos, difíciles de manejar"]
+      }
+    },
+    {
+      "name": "Hámster Enano Ruso Blanco Invierno (Winter White)",
+      "value": "winter_white_dwarf_hamster",
+      "parameters": {
+        "weight": { "min_acceptable": 25, "ideal_min": 30, "ideal_max": 55, "max_acceptable": 65, "unit": "g" },
+        "size_category": "Pequeño (Enano)",
+        "lifespan": { "min": 1.5, "max": 2.5, "unit": "años" },
+        "social_needs": ["Similar a Campbell, pueden vivir en parejas/grupos mismo sexo (introducción cuidadosa)"],
+        "primary_diet_type": "Omnívoro/Granívoro",
+        "housing_notes": ["Similar a Campbell", "Jaula/Tanque espacioso (mín. 60x40cm base)", "Sustrato profundo", "Rueda sólida (20cm+ diámetro)", "Baño de arena esencial", "Propensos a diabetes"]
+      }
+    },
+    {
+      "name": "Hámster Chino",
+      "value": "chinese_hamster",
+      "parameters": {
+        "weight": { "min_acceptable": 25, "ideal_min": 30, "ideal_max": 50, "max_acceptable": 60, "unit": "g" },
+        "size_category": "Pequeño (Enano)",
+        "lifespan": { "min": 2, "max": 3, "unit": "años" },
+        "social_needs": ["Generalmente Solitario (especialmente hembras)", "Algunos machos pueden cohabitar (introducción temprana)"],
+        "primary_diet_type": "Omnívoro/Granívoro",
+        "housing_notes": ["Buenos trepadores, jaula con barrotes horizontales o tanque con ramas", "Espacio similar a otros enanos", "Rueda sólida (20cm+)", "Sustrato", "Baño de arena", "Propensos a diabetes"]
+      }
+    },
+    {
+      "name": "Cobaya (Conejillo de Indias)",
+      "value": "guinea_pig",
+      "parameters": {
+        "weight": { "min_acceptable": 600, "ideal_min": 700, "ideal_max": 1300, "max_acceptable": 1500, "unit": "g" },
+        "size_category": "Grande (para roedor)",
+        "lifespan": { "min": 5, "max": 7, "unit": "años" },
+        "social_needs": ["Muy social, mantener en parejas o grupos (mismo sexo o macho castrado con hembras)"],
+        "primary_diet_type": "Herbívoro Estricto",
+        "housing_notes": ["Recinto grande de base (mín. 0.7m² para 1-2, más es mejor)", "Sin rueda", "Sustrato suave (evitar virutas de pino/cedro)", "Refugios/Casitas", "Comederos pesados", "Bebederos de botella o cuenco"]
+      }
+    },
+    {
+      "name": "Cobaya Skinny / Baldwin (Sin Pelo)",
+      "value": "skinny_pig",
+      "parameters": {
+        "weight": { "min_acceptable": 600, "ideal_min": 700, "ideal_max": 1200, "max_acceptable": 1400, "unit": "g" },
+        "size_category": "Grande (para roedor)",
+        "lifespan": { "min": 5, "max": 7, "unit": "años" },
+        "social_needs": ["Igual que otras cobayas (parejas/grupos)"],
+        "primary_diet_type": "Herbívoro Estricto (igual que otras cobayas)",
+        "housing_notes": ["Igual que otras cobayas pero MÁS SENSIBLES a corrientes de aire y frío", "Necesitan ambiente cálido (20-24°C)", "Piel sensible a heridas y sol", "Pueden necesitar mantas suaves"]
+      }
+    },
+    {
+      "name": "Rata Doméstica (Fancy Rat)",
+      "value": "fancy_rat",
+      "parameters": {
+        "weight": { "min_acceptable": 200, "ideal_min": 250, "ideal_max": 600, "max_acceptable": 700, "unit": "g" },
+        "size_category": "Grande (para roedor)",
+        "lifespan": { "min": 2, "max": 3.5, "unit": "años" },
+        "social_needs": ["Muy social, mantener en parejas o grupos del mismo sexo"],
+        "primary_diet_type": "Omnívoro",
+        "housing_notes": ["Jaula grande y alta con varios niveles (mín. 0.2m³ por rata aprox)", "Plataformas sólidas", "Hamacas, cuerdas, túneles", "Sustrato bajo en polvo (papel, cáñamo)", "Juguetes para roer", "Sensibles a problemas respiratorios"]
+      }
+    },
+    {
+      "name": "Ratón Doméstico (Fancy Mouse)",
+      "value": "fancy_mouse",
+      "parameters": {
+        "weight": { "min_acceptable": 15, "ideal_min": 20, "ideal_max": 45, "max_acceptable": 55, "unit": "g" },
+        "size_category": "Muy Pequeño",
+        "lifespan": { "min": 1, "max": 2, "unit": "años" },
+        "social_needs": ["Hembras muy sociales (grupos)", "Machos a menudo solitarios o castrados con hembras (fuerte olor territorial)"],
+        "primary_diet_type": "Omnívoro",
+        "housing_notes": ["Tanque o jaula con barrotes muy estrechos (escapistas)", "Espacio vertical con juguetes para trepar", "Rueda sólida (15cm+)", "Sustrato para excavar", "Juguetes para roer", "Sensibles a problemas respiratorios"]
+      }
+    },
+    {
+      "name": "Jerbo de Mongolia",
+      "value": "mongolian_gerbil",
+      "parameters": {
+        "weight": { "min_acceptable": 50, "ideal_min": 60, "ideal_max": 110, "max_acceptable": 130, "unit": "g" },
+        "size_category": "Pequeño/Mediano",
+        "lifespan": { "min": 3, "max": 4, "unit": "años" },
+        "social_needs": ["Muy social, mantener en parejas o grupos estables del mismo sexo (introducir jóvenes)"],
+        "primary_diet_type": "Granívoro/Omnívoro",
+        "housing_notes": ["Tanque alto (acuario/terrario) es IDEAL", "Mínimo 40L por jerbo, pero mucho más es mejor", "CAPA MUY PROFUNDA de sustrato (20cm+) para túneles", "Rueda sólida (20cm+)", "Baño de arena", "Mucho cartón y madera para roer (dientes crecen rápido)"]
+      }
+    },
+    {
+      "name": "Chinchilla",
+      "value": "chinchilla",
+      "parameters": {
+        "weight": { "min_acceptable": 350, "ideal_min": 400, "ideal_max": 700, "max_acceptable": 850, "unit": "g" },
+        "size_category": "Grande (para roedor)",
+        "lifespan": { "min": 10, "max": 20, "unit": "años" },
+        "social_needs": ["Social, mantener en parejas o grupos (mismo sexo o macho castrado/hembra)", "Introducción cuidadosa"],
+        "primary_diet_type": "Herbívoro Estricto",
+        "housing_notes": ["Jaula MUY grande y alta con múltiples niveles y plataformas de MADERA (NO plástico)", "Temperatura FRESCA (<24°C crítico, ideal 15-20°C)", "Evitar humedad alta", "BAÑO DE POLVO específico diario/frecuente (NO arena, NO agua)", "Juguetes de madera para roer", "Sin rueda o rueda metálica muy grande y segura"]
+      }
+    },
+    {
+      "name": "Degú",
+      "value": "degu",
+      "parameters": {
+        "weight": { "min_acceptable": 150, "ideal_min": 170, "ideal_max": 300, "max_acceptable": 350, "unit": "g" },
+        "size_category": "Mediano",
+        "lifespan": { "min": 5, "max": 8, "unit": "años" },
+        "social_needs": ["Extremadamente social, mantener en parejas o grupos (absolutamente necesario)"],
+        "primary_diet_type": "Herbívoro Estricto",
+        "housing_notes": ["Jaula grande y alta con niveles de metal o madera", "Rueda sólida grande (30cm+)", "Sustrato para excavar", "Baño de arena/polvo (similar chinchilla)", "Muchos juguetes seguros para roer (madera, cartón)", "Temperatura ambiente estable"]
+      }
+    }
+  ],
+  "ferret": [
+    {
+      "name": "Hurón Doméstico",
+      "value": "domestic_ferret",
+      "parameters": {
+        "weight": {
+          "min_acceptable": 0.4,
+          "ideal_min": 0.6,
+          "ideal_max": 1.8,
+          "max_acceptable": 2.4,
+          "unit": "kg",
+          "notes": "El peso varía significativamente por sexo y estación. Este rango es general."
+        },
+        "size_category": "Pequeño/Mediano (Mustélido)",
+        "lifespan": { "min": 6, "max": 10, "unit": "años" },
+        "social_needs": ["Muy social", "Mejor en parejas/grupos (introducción cuidadosa)", "Requieren mucha interacción si solos"],
+        "primary_diet_type": "Carnívoro Estricto",
+        "housing_notes": [
+          "Jaula grande multi-nivel, suelo sólido (mín. 90x60x60cm para 1-2)",
+          "Varias horas de juego supervisado fuera de la jaula DIARIAMENTE",
+          "Zona de juego a prueba de hurones (segura, sin peligros)",
+          "Hamacas, túneles, juguetes resistentes (NO goma blanda)",
+          "Letrina con sustrato adecuado (ej. papel prensado)",
+          "Temperatura ambiente FRESCA (15-21°C ideal, NUNCA >27°C)",
+          "Muy susceptibles a golpes de calor"
+        ],
+        "health_notes": [
+          "Propensos a enf. adrenal, insulinoma, linfoma",
+          "Vacunación esencial (Moquillo)",
+          "Esterilización esencial (especialmente hembras)",
+          "Sensibles a la gripe humana"
+        ]
+      }
+    }
+  ],
+  "reptile": [
+    {
+      "name": "Gecko Leopardo",
+      "value": "leopard_gecko",
+      "parameters": {
+        "adult_length": { "min": 18, "max": 25, "unit": "cm" },
+        "lifespan": { "min": 10, "max": 20, "unit": "años" },
+        "temperature": {
+          "basking_surface": { "min": 31, "max": 33 },
+          "warm_ambient": { "min": 28, "max": 30 },
+          "cool_ambient": { "min": 22, "max": 24 },
+          "night_min": 18,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 30, "ideal_max": 40, "unit": "%", "notes": "Necesita un refugio húmedo para mudar"},
+        "lighting": ["No requiere UVB (nocturno/crepuscular)", "Ciclo día/noche necesario"],
+        "diet_type": "Insectívoro",
+        "enclosure_min_size": "60x40x30 cm (LxWxH) para un adulto",
+        "temperament": ["Dócil", "Buen principiante", "No trepador"],
+        "substrate": ["Sustrato seguro (papel, baldosa)", "Evitar arena (riesgo impactación)"]
+      }
+    },
+    {
+      "name": "Dragón Barbudo",
+      "value": "bearded_dragon",
+      "parameters": {
+        "adult_length": { "min": 45, "max": 60, "unit": "cm" },
+        "lifespan": { "min": 8, "max": 15, "unit": "años" },
+        "temperature": {
+          "basking_spot": { "min": 38, "max": 43 },
+          "warm_ambient": { "min": 29, "max": 32 },
+          "cool_ambient": { "min": 24, "max": 27 },
+          "night_min": 18,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 30, "ideal_max": 40, "unit": "%" },
+        "lighting": ["UVB de alta potencia ESENCIAL (ej. T5 HO 10.0-12%)", "Luz de calor intensa"],
+        "diet_type": "Omnívoro",
+        "enclosure_min_size": "120x60x60 cm (LxWxH) MÍNIMO para adulto",
+        "temperament": ["Generalmente dócil", "Interactivo", "Buen principiante (si se cumplen requisitos)"],
+        "substrate": ["Sustrato seguro (papel, baldosa, sustratos bioactivos específicos)", "Evitar arena suelta, especialmente en jóvenes"]
+      }
+    },
+    {
+      "name": "Gecko Crestado",
+      "value": "crested_gecko",
+      "parameters": {
+        "adult_length": { "min": 18, "max": 25, "unit": "cm" },
+        "lifespan": { "min": 10, "max": 20, "unit": "años" },
+        "temperature": {
+          "warm_ambient": { "min": 24, "max": 27 },
+          "cool_ambient": { "min": 21, "max": 23 },
+          "night_min": 18,
+          "max_limit": 29,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 60, "ideal_max": 80, "unit": "%", "notes": "Requiere pulverización diaria/nebulizador" },
+        "lighting": ["UVB de baja potencia opcional/beneficioso (ej. 2.0-5.0)", "Principalmente nocturno/crepuscular", "Ciclo día/noche"],
+        "diet_type": "Frugívoro/Insectívoro",
+        "enclosure_min_size": "45x45x60 cm (LxWxH) MÍNIMO para adulto (Arbóreo)",
+        "temperament": ["Generalmente dócil", "Saltador", "Puede soltar cola (no regenera igual)"],
+        "substrate": ["Sustratos que mantengan humedad (fibra coco, musgo, bioactivo)"]
+      }
+    },
+    {
+      "name": "Iguana Verde",
+      "value": "green_iguana",
+      "parameters": {
+        "adult_length": { "min": 1.5, "max": 2.0, "unit": "m" },
+        "lifespan": { "min": 15, "max": 20, "unit": "años" },
+        "temperature": {
+          "basking_spot": { "min": 35, "max": 38 },
+          "warm_ambient": { "min": 28, "max": 30 },
+          "cool_ambient": { "min": 24, "max": 26 },
+          "night_min": 21,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 70, "ideal_max": 80, "unit": "%" },
+        "lighting": ["UVB de alta potencia ESENCIAL", "Calor intenso"],
+        "diet_type": "Herbívoro Estricto",
+        "enclosure_min_size": "ENORME: 2.5m L x 1.5m W x 2m H (mínimo absoluto para adulto)",
+        "temperament": ["Pueden ser agresivas/territoriales (especialmente machos)", "Requiere socialización constante", "No para principiantes"],
+        "substrate": ["Que mantenga humedad, fácil de limpiar"]
+      }
+    },
+    {
+      "name": "Camaleón Velado (Yemen)",
+      "value": "veiled_chameleon",
+      "parameters": {
+        "adult_length": { "min": 35, "max": 60, "unit": "cm" },
+        "lifespan": { "min": 4, "max": 8, "unit": "años" },
+        "temperature": {
+          "basking_spot": { "min": 30, "max": 35 },
+          "ambient_day": { "min": 24, "max": 28 },
+          "night_drop_to": { "min": 18, "max": 21 },
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 50, "ideal_max": 70, "unit": "%", "notes": "Buena ventilación crucial, nebulizador/gotero para hidratación" },
+        "lighting": ["UVB 5.0-10.0 ESENCIAL", "Luz de calor"],
+        "diet_type": "Insectívoro",
+        "enclosure_min_size": "60x60x120 cm (LxWxH) MÍNIMO para adulto (Arbóreo, jaula de malla ideal)",
+        "temperament": ["Se estresan fácilmente con el manejo", "Mejor como animal de observación", "Territoriales"],
+        "substrate": ["Sin sustrato o muy simple (papel), jaulas de malla no suelen llevar"]
+      }
+    },
+    {
+      "name": "Serpiente del Maíz",
+      "value": "corn_snake",
+      "parameters": {
+        "adult_length": { "min": 1.0, "max": 1.5, "unit": "m" },
+        "lifespan": { "min": 15, "max": 20, "unit": "años" },
+        "temperature": {
+          "warm_spot_surface": { "min": 28, "max": 30 },
+          "cool_ambient": { "min": 22, "max": 25 },
+          "night_min": 20,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 40, "ideal_max": 50, "unit": "%", "notes": "Aumentar ligeramente durante la muda"},
+        "lighting": ["No requiere UVB", "Ciclo día/noche"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "90x45x45 cm (LxWxH) para adulto",
+        "temperament": ["Muy dócil", "Excelente para principiantes", "Resistente"],
+        "substrate": ["Aspen, fibra de coco, ciprés"]
+      }
+    },
+    {
+      "name": "Pitón Bola (Pitón Real)",
+      "value": "ball_python",
+      "parameters": {
+        "adult_length": { "min": 0.9, "max": 1.5, "unit": "m" },
+        "lifespan": { "min": 20, "max": 30, "unit": "años" },
+        "temperature": {
+          "warm_spot_surface": { "min": 31, "max": 33 },
+          "cool_ambient": { "min": 24, "max": 26 },
+          "night_min": 22,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 55, "ideal_max": 65, "unit": "%", "notes": "Crucial para la muda, mantener estable"},
+        "lighting": ["No requiere UVB", "Ciclo día/noche"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "120x60x45 cm (LxWxH) ideal para adulto (Prefieren terrarios tipo 'tub' o con muchos escondites)",
+        "temperament": ["Generalmente dócil", "Tímida", "Se 'embolan' al asustarse"],
+        "substrate": ["Fibra de coco, ciprés, musgo sphagnum (mantienen humedad)"]
+      }
+    },
+    {
+      "name": "Boa Constrictor (Común - BCI/BCC)",
+      "value": "boa_constrictor_common",
+      "parameters": {
+        "adult_length": { "min": 1.5, "max": 3.0, "unit": "m" },
+        "lifespan": { "min": 20, "max": 30, "unit": "años" },
+        "temperature": {
+          "warm_spot_surface": { "min": 30, "max": 32 },
+          "cool_ambient": { "min": 24, "max": 27 },
+          "night_min": 22,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 60, "ideal_max": 75, "unit": "%" },
+        "lighting": ["No requiere UVB", "Ciclo día/noche"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "180x60x60 cm (LxWxH) MÍNIMO para adulto promedio, más grandes necesitan más",
+        "temperament": ["Generalmente dóciles si se manejan regularmente desde jóvenes", "Potentes"],
+        "substrate": ["Que mantenga humedad (ciprés, coco), fácil de limpiar"]
+      }
+    },
+    {
+      "name": "Tortuga de Orejas Rojas",
+      "value": "red_eared_slider",
+      "parameters": {
+        "adult_carapace_length": { "min": 20, "max": 30, "unit": "cm" },
+        "lifespan": { "min": 20, "max": 40, "unit": "años" },
+        "temperature": {
+          "water_temp": { "min": 24, "max": 27 },
+          "basking_area_air": { "min": 30, "max": 35 },
+          "unit": "°C"
+        },
+        "humidity": { "notes": "Es acuática, humedad ambiental no crítica si tiene agua" },
+        "lighting": ["UVB ESENCIAL sobre la zona de basking", "Luz de calor sobre basking"],
+        "diet_type": "Omnívoro",
+        "enclosure_min_size": "Acuario MUY grande (mín. 200L para una adulta, idealmente estanques). Filtración potente ESENCIAL. Zona seca (basking) accesible.",
+        "temperament": ["Tímida", "Puede morder", "No ideal para manejo frecuente"],
+        "health_notes": ["Propensas a infecciones oculares/respiratorias por mala calidad de agua/falta UVB/vitaminas"]
+      }
+    },
+    {
+      "name": "Tortuga Rusa",
+      "value": "russian_tortoise",
+      "parameters": {
+        "adult_carapace_length": { "min": 15, "max": 25, "unit": "cm" },
+        "lifespan": { "min": 40, "max": 50, "unit": "años" },
+        "temperature": {
+          "basking_spot": { "min": 32, "max": 35 },
+          "warm_ambient": { "min": 26, "max": 29 },
+          "cool_ambient": { "min": 21, "max": 24 },
+          "night_min": 15,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 40, "ideal_max": 60, "unit": "%", "notes": "Ambiente relativamente seco pero con acceso a microclima húmedo (cueva) y agua para beber/bañarse" },
+        "lighting": ["UVB ESENCIAL", "Luz de calor"],
+        "diet_type": "Herbívoro Estricto",
+        "enclosure_min_size": "Recinto exterior ideal (seguro). Interior: 120x60 cm MÍNIMO absoluto, mesa tortuguera grande mejor.",
+        "temperament": ["Activa", "Excavadora", "Generalmente tímida"],
+        "substrate": ["Mezcla de tierra/coco/arena, profundo para excavar"]
+      }
+    },
+    {
+      "name": "Tortuga Mora (Griega)",
+      "value": "greek_tortoise",
+      "parameters": {
+        "adult_carapace_length": { "min": 15, "max": 28, "unit": "cm" },
+        "lifespan": { "min": 50, "max": 100, "unit": "años" },
+        "temperature": {
+          "basking_spot": { "min": 32, "max": 35 },
+          "warm_ambient": { "min": 26, "max": 29 },
+          "cool_ambient": { "min": 22, "max": 25 },
+          "night_min": 18,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 40, "ideal_max": 60, "unit": "%" , "notes": "Similar a la Rusa, necesitan opción húmeda"},
+        "lighting": ["UVB ESENCIAL", "Luz de calor"],
+        "diet_type": "Herbívoro Estricto",
+        "enclosure_min_size": "Recinto exterior ideal. Interior: Mesa tortuguera grande (120x60+ cm)",
+        "temperament": ["Activa", "Curiosa"],
+        "substrate": ["Mezcla de tierra/coco/arena"]
+      }
+    }
+  ],
+  "amphibian": [
+    {
+      "name": "Rana Arborícola de White (Rana Dumpy)",
+      "value": "whites_tree_frog",
+      "parameters": {
+        "adult_length": { "min": 7, "max": 12, "unit": "cm" },
+        "lifespan": { "min": 10, "max": 15, "unit": "años" },
+        "temperature": {
+          "day_ambient": { "min": 24, "max": 28 },
+          "night_ambient": { "min": 20, "max": 23 },
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 50, "ideal_max": 70, "unit": "%", "notes": "Necesita buena ventilación para evitar infecciones" },
+        "lighting": ["No requiere UVB (puede usar bajo nivel)", "Ciclo día/noche"],
+        "diet_type": "Insectívoro",
+        "enclosure_min_size": "Terrario vertical 45x45x60 cm (LxWxH) para 1-2 adultos (Arbórea)",
+        "water_needs": ["Cuenco de agua grande y poco profundo para remojo (agua declorada)"],
+        "temperament": ["Dócil", "Robusta (para anfibio)", "No muy activa de día"],
+        "substrate": ["Fibra de coco, musgo, sustrato bioactivo"]
+      }
+    },
+    {
+      "name": "Rana Pacman (Escuerzo Cornudo)",
+      "value": "pacman_frog",
+      "parameters": {
+        "adult_length": { "min": 10, "max": 15, "unit": "cm" },
+        "lifespan": { "min": 6, "max": 10, "unit": "años" },
+        "temperature": {
+          "ambient": { "min": 24, "max": 28 },
+          "night_min": 21,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 70, "ideal_max": 85, "unit": "%" },
+        "lighting": ["No requiere UVB", "Luz tenue, ciclo día/noche"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "Terrario 40-75 Litros (base ancha) para adulto (Terrestre, de emboscada)",
+        "water_needs": ["Cuenco de agua poco profundo para remojo"],
+        "temperament": ["Voraz", "Sedentaria", "Pueden morder si se sienten amenazadas", "Mejor no manipular"],
+        "substrate": ["Fibra de coco profunda y húmeda (para enterrarse), musgo sphagnum"]
+      }
+    },
+    {
+      "name": "Rana Enana Africana",
+      "value": "african_dwarf_frog",
+      "parameters": {
+        "adult_length": { "min": 2.5, "max": 4, "unit": "cm" },
+        "lifespan": { "min": 5, "max": 8, "unit": "años" },
+        "temperature": {
+          "water_temp": { "min": 22, "max": 26 },
+          "unit": "°C"
+        },
+        "humidity": { "notes": "Totalmente acuática" },
+        "lighting": ["Luz tenue de acuario"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "Acuario MÍNIMO 20 Litros para un grupo pequeño (3-4)",
+        "water_needs": ["Totalmente acuáticas", "Filtración suave", "Cambios de agua regulares (decolorada)"],
+        "temperament": ["Pacífica", "Social (mantener en grupos)", "Activa"],
+        "substrate": ["Arena fina o fondo desnudo (grava puede causar impactación)"]
+      }
+    },
+    {
+      "name": "Rana de Uñas Africana",
+      "value": "african_clawed_frog",
+      "parameters": {
+        "adult_length": { "min": 10, "max": 13, "unit": "cm" },
+        "lifespan": { "min": 15, "max": 20, "unit": "años" },
+        "temperature": {
+          "water_temp": { "min": 20, "max": 24 },
+          "unit": "°C"
+        },
+        "humidity": { "notes": "Totalmente acuática" },
+        "lighting": ["Luz tenue"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "Acuario MÍNIMO 40 Litros por rana adulta",
+        "water_needs": ["Totalmente acuáticas", "Buena filtración", "Cambios de agua"],
+        "temperament": ["Activa", "Puede comer compañeros de tanque más pequeños", "Mejor mantener sola o con otras de su especie"],
+        "substrate": ["Arena gruesa, piedras grandes o fondo desnudo"]
+      }
+    },
+    {
+      "name": "Rana de Ojos Rojos",
+      "value": "red_eyed_tree_frog",
+      "parameters": {
+        "adult_length": { "min": 5, "max": 7, "unit": "cm" },
+        "lifespan": { "min": 5, "max": 10, "unit": "años" },
+        "temperature": {
+          "day_ambient": { "min": 24, "max": 28 },
+          "night_ambient": { "min": 20, "max": 23 },
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 70, "ideal_max": 85, "unit": "%", "notes": "Requiere alta humedad y buena ventilación"},
+        "lighting": ["No requiere UVB (puede usar bajo nivel)", "Ciclo día/noche"],
+        "diet_type": "Insectívoro",
+        "enclosure_min_size": "Terrario vertical alto 45x45x60 cm (LxWxH) para 2-3 adultos",
+        "water_needs": ["Cuenco de agua, pulverización regular"],
+        "temperament": ["Nocturna", "Tímida", "Sensible al estrés", "Mejor como animal de observación"],
+        "substrate": ["Que retenga humedad (coco, musgo), plantas vivas/artificiales densas"]
+      }
+    },
+    {
+      "name": "Rana Tomate",
+      "value": "tomato_frog",
+      "parameters": {
+        "adult_length": { "min": 6, "max": 10, "unit": "cm" },
+        "lifespan": { "min": 6, "max": 10, "unit": "años" },
+        "temperature": {
+          "ambient": { "min": 22, "max": 26 },
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 70, "ideal_max": 85, "unit": "%" },
+        "lighting": ["No requiere UVB", "Luz tenue"],
+        "diet_type": "Insectívoro",
+        "enclosure_min_size": "Terrario 40 Litros para 1-2 adultos",
+        "water_needs": ["Cuenco de agua poco profundo"],
+        "temperament": ["Nocturna", "Secreta una sustancia pegajosa si se estresa", "Relativamente fácil de cuidar"],
+        "substrate": ["Fibra de coco profunda y húmeda, musgo"]
+      }
+    },
+    {
+      "name": "Salamandra Tigre",
+      "value": "tiger_salamander",
+      "parameters": {
+        "adult_length": { "min": 15, "max": 30, "unit": "cm" },
+        "lifespan": { "min": 10, "max": 15, "unit": "años" },
+        "temperature": {
+          "ambient": { "min": 18, "max": 22 },
+          "max_limit": 24,
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 70, "ideal_max": 80, "unit": "%" },
+        "lighting": ["No requiere UVB", "Luz muy tenue"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "Terrario 75 Litros (base ancha) para adulto",
+        "water_needs": ["Cuenco de agua grande y poco profundo"],
+        "temperament": ["Tímida", "Nocturna", "Excavadora"],
+        "substrate": ["Sustrato profundo (10-15cm) y húmedo (tierra sin químicos, coco, musgo)"]
+      }
+    },
+    {
+      "name": "Tritón Oriental / Japonés (Fire Belly Newt)",
+      "value": "fire_belly_newt",
+      "parameters": {
+        "adult_length": { "min": 8, "max": 12, "unit": "cm" },
+        "lifespan": { "min": 10, "max": 20, "unit": "años" },
+        "temperature": {
+          "water_temp": { "min": 15, "max": 21 },
+          "ambient_land": { "min": 18, "max": 22 },
+          "unit": "°C"
+        },
+        "humidity": { "ideal_min": 70, "ideal_max": 80, "unit": "%", "notes": "En la zona terrestre" },
+        "lighting": ["No requiere UVB", "Luz tenue"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "Acuaterrario 40 Litros para un grupo pequeño (2/3 agua, 1/3 tierra)",
+        "water_needs": ["Agua limpia y fría", "Filtración suave", "Zona terrestre accesible"],
+        "temperament": ["Activo", "Interesante de observar", "Piel tóxica (no manipular sin guantes/lavarse bien)"],
+        "substrate": ["Tierra/musgo en zona terrestre, fondo desnudo o arena/grava grande en agua"]
+      }
+    },
+    {
+      "name": "Ajolote (Axolotl)",
+      "value": "axolotl",
+      "parameters": {
+        "adult_length": { "min": 15, "max": 30, "unit": "cm" },
+        "lifespan": { "min": 10, "max": 15, "unit": "años" },
+        "temperature": {
+          "water_temp": { "min": 16, "max": 18 },
+          "max_limit": 22,
+          "unit": "°C"
+        },
+        "humidity": { "notes": "Totalmente acuático" },
+        "lighting": ["Luz muy tenue o ninguna (sensibles a la luz)", "Evitar luz directa"],
+        "diet_type": "Carnívoro",
+        "enclosure_min_size": "Acuario MÍNIMO 75 Litros para un adulto (más largo que alto), +40L por cada ajolote adicional",
+        "water_needs": ["Totalmente acuáticos", "Filtración sobredimensionada pero de bajo flujo", "Cambios de agua semanales grandes (decolorada y fría)", "Ciclo de nitrógeno establecido ESENCIAL"],
+        "temperament": ["Relativamente inactivo", "Pueden morder extremidades de otros ajolotes si están hacinados o hambrientos", "No deben alojarse con peces"],
+        "substrate": ["Fondo desnudo, arena muy fina (solo adultos) o piedras MUY grandes (más grandes que su cabeza). NUNCA GRAVA (riesgo de impactación fatal)."]
+      }
+    }
+  ],
+  "primate": [
+    {
+      "name": "Tití Común (Marmoset)",
+      "value": "common_marmoset",
+      "parameters": {
+        "adult_length": { "approx": 20, "unit": "cm" , "notes": "(más cola)"},
+        "lifespan": "10-15+ años (en entornos adecuados)",
+        "care_complexity": ["Extremadamente Alta", "Requiere experiencia especializada"],
+        "social_needs": ["Muy social", "Necesita vivir en grupos familiares complejos"],
+        "diet_type": "Omnívoro especializado (Gomas, insectos, frutas, néctar)",
+        "housing_notes": ["Recinto muy grande, vertical, complejo, con acceso exterior idealmente", "Enriquecimiento constante"],
+        "ethical_considerations": ["Altamente inadecuado como mascota", "Sufren enormemente en aislamiento o entornos domésticos"],
+        "legal_status_warning": ["Ilegal o fuertemente regulado en la mayoría de lugares"],
+        "zoonotic_risk": ["Sí, pueden transmitir enfermedades a humanos"]
+      }
+    },
+    {
+      "name": "Mono Ardilla (Saimiri)",
+      "value": "squirrel_monkey",
+      "parameters": {
+        "adult_length": { "approx": "25-35", "unit": "cm", "notes": "(más cola)" },
+        "lifespan": "15-25+ años (en entornos adecuados)",
+        "care_complexity": ["Extremadamente Alta"],
+        "social_needs": ["Viven en grandes grupos sociales", "Necesitan interacción constante"],
+        "diet_type": "Omnívoro (Insectos, frutas, néctar, pequeños vertebrados)",
+        "housing_notes": ["Recinto muy grande, arbóreo, con espacio para moverse y explorar"],
+        "ethical_considerations": ["Inadecuado como mascota", "Necesidades sociales y espaciales imposibles de satisfacer en casa"],
+        "legal_status_warning": ["Ilegal o fuertemente regulado"],
+        "zoonotic_risk": ["Sí"]
+      }
+    },
+    {
+      "name": "Mono Capuchino",
+      "value": "capuchin_monkey",
+      "parameters": {
+        "adult_length": { "approx": "30-55", "unit": "cm", "notes": "(más cola)" },
+        "lifespan": "15-40+ años (en entornos adecuados)",
+        "care_complexity": ["Extremadamente Alta", "Muy inteligentes y destructivos si no estimulados"],
+        "social_needs": ["Altamente social, viven en grupos complejos"],
+        "diet_type": "Omnívoro muy variado",
+        "housing_notes": ["Recinto enorme, seguro y extremadamente enriquecido"],
+        "ethical_considerations": ["Terrible elección como mascota", "Propensos a problemas de comportamiento graves", "Pueden ser agresivos"],
+        "legal_status_warning": ["Ilegal o fuertemente regulado"],
+        "zoonotic_risk": ["Sí, significativo"]
+      }
+    },
+    {
+        "name": "ADVERTENCIA GENERAL - PRIMATES",
+        "value": "primate_warning",
+        "parameters": {
+            "care_complexity": ["Máxima posible"],
+            "add_pet_alert": [
+                "Los primates NO son mascotas. No se pueden mantener adecuadamente en un entorno doméstico.",
+                "Requieren atención y cuidado especializados. No son animales de compañía adecuados.",
+                "Esta aplicación no apoya la tenencia de primates como mascotas. No podrás añadir datos especificos de primates."
+            ],
+            "ethical_considerations": [
+                "La tenencia de primates como mascotas es ampliamente considerada poco ética y perjudicial para el bienestar del animal.",
+                "Sus complejas necesidades sociales, psicológicas y físicas no pueden satisfacerse adecuadamente en un entorno doméstico.",
+                "La mayoría sufren problemas de comportamiento y salud en cautiverio privado."
+            ],
+            "legal_status_warning": [
+                "La posesión privada es ILEGAL en muchas jurisdicciones o requiere permisos especializados casi imposibles de obtener para un particular.",
+                "Infórmese exhaustivamente sobre las leyes locales, estatales y nacionales."
+            ],
+            "safety_risk": [
+                "Riesgo significativo de mordeduras graves y transmisión de enfermedades zoonóticas peligrosas."
+            ],
+            "recommendation": [
+                "NO ADQUIERA UN PRIMATE COMO MASCOTA.",
+                "Apoye a santuarios acreditados y organizaciones de conservación."
+            ]
+        }
+    }
+  ]
+}
+  
