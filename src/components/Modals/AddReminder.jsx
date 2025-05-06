@@ -17,8 +17,10 @@ import DateTimePicker, {useDefaultStyles} from 'react-native-ui-datepicker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useToast } from 'react-native-toast-notifications';
 import { getDayName, getMonthName, getTimeStampInHours } from '../../utils/shared';
-import { getItem } from '../../utils/storage';
+import { getItem, storeItem } from '../../utils/storage';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
+import { tokenRefreshWrapper } from '../../services/tokenRefreshWrapper';
+import { useUser } from '../../context/UserContext';
 
 const { height } = Dimensions.get('window');
 
@@ -64,6 +66,7 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
 
   const defaultDatePickerStyles = useDefaultStyles('light');
   const toast = useToast();
+  const {user,refreshUser} = useUser();
 
   useEffect(() => {
     getLocalData();
@@ -174,7 +177,7 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
 
     // Obtener el valor de frecuencia correspondiente al tipo de recurrencia seleccionado
     const freq = baseFreqMap[recurrenceType.value];
-    if (!freq) return `FREQ=${freq}`; // Si no hay frecuencia, no se agrega la regla de recurrencia
+    if (!freq) return null; // Si no hay frecuencia, devolvemos null
 
     // Construir la regla de recurrencia
     let ruleParts = [`FREQ=${freq}`];
@@ -182,9 +185,11 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
     // Agregar el intervalo de repetición
     let currentInterval = 1;
     if (freq === 'HOURLY') {
-      currentInterval = parseInt(hourlyInterval) || 1;
+      currentInterval = parseInt(hourlyInterval, 10) || 1;
+      if (isNaN(currentInterval) || currentInterval < 1) currentInterval = 1;
     } else {
-      currentInterval = parseInt(interval) || 1;
+      currentInterval = parseInt(interval, 10) || 1;
+      if (isNaN(currentInterval) || currentInterval < 1) currentInterval = 1;
     }
 
     // Validar el intervalo
@@ -194,13 +199,15 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
 
     // Agregar recurrencia por día, semana, mes o año
     if (freq === 'WEEKLY') {
-      if (!selectedWeekdays.length) {
+      if (!selectedWeekdays || selectedWeekdays.length === 0) {
         setErrors('weekdays');
-        return;
+        return null;
       }
+      // Mapeamos los días seleccionados a los valores de RRULE
       const days = selectedWeekdays.map(day => ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'][day]).join(',');
       ruleParts.push(`BYDAY=${days}`);
     } else if (freq === 'MONTHLY') {
+      // Mapeamos el día del mes a los valores de RRULE
       ruleParts.push(`BYMONTHDAY=${selectedRange.startDate.getDate()}`);
     } else if (freq === 'YEARLY') {
       ruleParts.push(`BYMONTH=${selectedRange.startDate.getMonth() + 1}`);
@@ -218,11 +225,12 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
         const untilDate = new Date(selectedRange.endDate);
         untilDate.setHours(23, 59, 59, 999);
         try {
-          const untilISOString = untilDate.toISOString().replace(/.\d{3}Z$/, 'Z').replace(/[-:]/g, '');
+          // Limpiamos el formato de la fecha para que sea YYYYMMDDTHHMMSSZ
+          const untilISOString = untilDate.toISOString().replace(/.\d{3}X$/, 'Z').replace(/[-:]/g, '');
           ruleParts.push(`UNTIL=${untilISOString}`);
         } catch (error) {
           console.error('Error converting date to UTC:', error);
-          return;
+          return null;
         }
       }
     }
@@ -248,8 +256,13 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
     setShowSummary(true);
   };
 
-  const handleSaveAndClose = () => {
+  const handleSaveAndClose = async () => {
     const recurrenceRule = buildRecurrence();
+
+    if (recurrenceRule === null) {
+      setErrors('recurrence');
+      return;
+    }
     let triggerDateTimeUTC = null;
 
     if (selectedRange.startDate && selectedTime) {
@@ -269,22 +282,44 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
       return;
     }
 
+    if (!triggerDateTimeUTC) {
+      return;
+    }
+
     const reminderData = {
       title,
-      description,
+      body: description,
       petId: selectedPetId?.value,
       reminderType: selectedTypeId?.value,
-      instructions,
+      triggerDatetimeUtc: triggerDateTimeUTC,
       recurrenceRule,
-      triggerDateTimeUTC,
+      instructions,
     };
 
-    // Aquí se enviaria la información al backend, junto al accessToken
-    console.log('Data to send to backend:', reminderData);
-    // TODO -> Save reminder data to API
-    toast.show('Recordatorio guardado', { type: 'success' });
-    setShowSummary(false);
-    closeModal();
+    console.log('Reminder Data:', reminderData);
+
+    const response = await tokenRefreshWrapper('addReminder', reminderData, toast, user, refreshUser);
+
+    if (response.success) {
+      const savedReminders = await getItem(STORAGE_KEYS.REMINDERS);
+
+      const parsedReminders = savedReminders ? JSON.parse(savedReminders) : [];
+      let newReminders = [];
+      if (savedReminders) {
+        newReminders = [...parsedReminders, reminderData];
+      } else {
+        newReminders = [reminderData];
+      }
+
+      await storeItem(STORAGE_KEYS.REMINDERS, JSON.stringify(newReminders));
+
+      toast.show('Recordatorio guardado', { type: 'success' });
+  
+      setShowSummary(false);
+      closeModal();
+    } else {
+      toast.show('Error al guardar el recordatorio', { type: 'danger' });
+    }
   };
 
   return (

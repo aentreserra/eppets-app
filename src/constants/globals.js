@@ -1,3 +1,7 @@
+import * as FileSystem from 'expo-file-system';
+
+export const PHOTOS_DIR = FileSystem.documentDirectory + 'dailyPhotos/';
+
 export const speciesOptions = [
   { label: 'Canino', value: 'dog', icon: 'dog'},
   { label: 'Felino', value: 'cat', icon: 'cat'},

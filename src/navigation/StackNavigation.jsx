@@ -11,6 +11,9 @@ import RegisterScreen from '../screens/Auth/RegisterScreen';
 import WelcomeAppScreen from '../screens/Welcome/WelcomeAppScreen';
 import ManagePetScreen from '../screens/Stack/ManagePetScreen';
 import AddPetScreen from '../screens/Stack/AddPetScreen';
+import DailyPhotosScreen from '../screens/Stack/DailyPhotosScreen';
+import ArchivementsScreen from '../screens/Stack/ArchivementsScreen';
+import SettingsScreen from '../screens/Stack/SettingsScreen';
 
 const Stack = createStackNavigator();
 
@@ -28,8 +31,11 @@ const StackNavigation = () => {
       {/* Stack */}
       <Stack.Screen name="ManagePet" component={ManagePetScreen} />
       <Stack.Screen name="AddPet" component={AddPetScreen} />
+      <Stack.Screen name="DailyPhotos" component={DailyPhotosScreen} />
+      <Stack.Screen name="Archivements" component={ArchivementsScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   )
 }
 
-export default StackNavigation
+export default StackNavigation;

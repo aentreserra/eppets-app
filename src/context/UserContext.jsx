@@ -34,7 +34,6 @@ export const UserProvider = ({ children }) => {
       if (firstRun === null) return;
       
       const token = await getSecureItem(SECURE_STORAGE_KEYS.REFRESH_TOKEN);
-      console.log("Token:", token);
       if (token) {
         const now = Date.now();
         const reamingTime = user ? user.accessTokenExpiration - now : 0;
@@ -52,7 +51,6 @@ export const UserProvider = ({ children }) => {
           throw new Error('Error getting user data');
         } else {
           const storedUser = await getItem(STORAGE_KEYS.USER_PROFILE);
-          console.log("Stored user data:", storedUser);
           if (storedUser) {
             const storedData = JSON.parse(storedUser);
             const userData = {
@@ -60,7 +58,6 @@ export const UserProvider = ({ children }) => {
               accessToken: response.accessToken,
               accessTokenExpiration: new Date().getTime() + 900000,
             }
-            console.log("Setting user data...", userData);
             setUser(userData);
 
             if (response.refreshToken) {
@@ -110,8 +107,6 @@ export const UserProvider = ({ children }) => {
           return user;
         }
   
-        console.log("Refreshing user access token...");
-  
         const response = await callFirebaseFunction('refreshTokenAttempt', { refreshToken: token }, toast);
         if (response.success) {
           if (!user) {
@@ -121,9 +116,7 @@ export const UserProvider = ({ children }) => {
           }
           
           const userData = {
-            id: user.id,
-            email: user.email,
-            name: user.name,
+            ...user,
             accessToken: response.accessToken,
             accessTokenExpiration: Date.now() + 900000,
           };
@@ -134,7 +127,7 @@ export const UserProvider = ({ children }) => {
             await storeSecureItem(SECURE_STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
           }
           
-          return userData
+          return userData;
         } else {
           setUser(null);
           replace('Login', {});

@@ -37,7 +37,7 @@ const ensureValidToken = async (
     })();
   }
 
-  return await refreshPromise;
+  return refreshPromise;
 };
 
 /**
@@ -73,14 +73,13 @@ export const tokenRefreshWrapper = async (
   } catch (error) {
     // Varificamos si el error es de token
     if (error.message.includes("Invalid token")) {
-      await refreshUser();
-      const lastUser = user;
+      const newUser = await refreshUser();
   
-      if (!lastUser) {
+      if (!newUser) {
         return null;
       }
   
-      requestData.accessToken = lastUser.accessToken;
+      requestData.accessToken = newUser.accessToken;
       return await callFirebaseFunction(functionName, requestData, toast);
     }
     throw error;

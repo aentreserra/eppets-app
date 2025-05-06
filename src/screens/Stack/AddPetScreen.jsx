@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, TextInput, ScrollView, Touchable } from 'react-native'
+import { View, TouchableOpacity, StyleSheet, Image, TextInput, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -7,7 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useToast } from 'react-native-toast-notifications'
 import DateTimePicker, {useDefaultStyles} from 'react-native-ui-datepicker';
 import Modal from 'react-native-modal';
-import { formattedDateDayMonthYear, getDayName, getMonthName } from '../../utils/shared'
+import { formattedDateDayMonthYear } from '../../utils/shared'
 import { tokenRefreshWrapper } from '../../services/tokenRefreshWrapper'
 import { useUser } from '../../context/UserContext'
 import { STORAGE_KEYS } from '../../constants/storageKeys'
@@ -305,14 +305,14 @@ const AddPetScreen = ({route, navigation}) => {
       {step !== 4 &&
         <View style={styles.headerContainer}>
           <MaterialIcons name="arrow-back-ios" size={24} color="#191717" onPress={() => navigation.goBack()} />
-            <View style={styles.headerRow}>
-              <TouchableOpacity activeOpacity={0.8} style={styles.roundedItem} onPress={() => {}}>
-                <MaterialIcons name="add" size={24} color="#EF9B93" onPress={() =>{}} />
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.8} style={styles.roundedItem} onPress={() => {}}>
-                <MaterialIcons name="edit" size={24} color="#EF9B93" onPress={() =>{}} />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.headerRow}>
+            <TouchableOpacity activeOpacity={0.8} style={styles.roundedItem} onPress={() => {}}>
+              <MaterialIcons name="add" size={24} color="#EF9B93" />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.8} style={styles.roundedItem} onPress={() => {}}>
+              <MaterialIcons name="edit" size={24} color="#EF9B93" />
+            </TouchableOpacity>
+          </View>
         </View>
       }
       <View style={styles.petdata}>

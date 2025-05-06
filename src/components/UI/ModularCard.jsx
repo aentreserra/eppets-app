@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import LatoText from '../Fonts/LatoText';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const ModularCard = ({title, icon, data, type}) => {
+const ModularCard = ({title, icon, data, type, onClick, viewMoreClick}) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -12,7 +12,9 @@ const ModularCard = ({title, icon, data, type}) => {
           <LatoText style={styles.title}>{title}</LatoText>
         </View>
         <View style={styles.headerRight}>
-          <LatoText style={styles.viewMoreText}>Ver todos <MaterialCommunityIcons name='arrow-right' /></LatoText>
+          <TouchableOpacity activeOpacity={0.8} onPress={viewMoreClick}>
+            <LatoText style={styles.viewMoreText}>Ver todos <MaterialCommunityIcons name='arrow-right' /></LatoText>
+          </TouchableOpacity>
         </View>
       </View>
       {
@@ -37,11 +39,13 @@ const ModularCard = ({title, icon, data, type}) => {
           <View style={styles.pictureContainer}>
             {
               data ? 
-              <LatoText style={styles.pictureText}>Imagen del día</LatoText> : 
+                <Image source={{ uri: data }} style={styles.pictureImage} resizeMode='cover' /> : 
               (
                 <>
                   <LatoText style={styles.pictureText}>No has hecho la foto hoy :c</LatoText>
-                  <LatoText style={styles.pictureTextCTR}>Hazla ahora</LatoText>
+                  <TouchableOpacity activeOpacity={0.8} onPress={onClick}>
+                    <LatoText style={styles.pictureTextCTR}>Hazla ahora</LatoText>
+                  </TouchableOpacity>
                 </>
             )
             }
@@ -53,11 +57,11 @@ const ModularCard = ({title, icon, data, type}) => {
             <View key={index}>
               <View style={styles.notisContainer}>
                 <View style={styles.notisIconContainer}>
-                  <MaterialCommunityIcons name={item.iconName} size={21} color="#EF9B93" />
+                  <MaterialCommunityIcons name={item.icon} size={21} color="#EF9B93" />
                   {!item.userViewed && <View style={styles.notisWarning} />}
                 </View>
                 <View>
-                  <LatoText style={styles.notisTitle}>{item.title}</LatoText>
+                  <LatoText numberOfLines={2} style={styles.notisTitle}>{item.title}</LatoText>
                 </View>
               </View>
               {index < data.length - 1 && (<View style={styles.devider}/>)}

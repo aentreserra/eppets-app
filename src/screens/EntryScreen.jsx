@@ -7,6 +7,8 @@ import { useUser } from '../context/UserContext';
 import { useToast } from 'react-native-toast-notifications';
 import { isTokenExpired } from '../utils/shared';
 import LatoText from '../components/Fonts/LatoText';
+import * as FileSystem from 'expo-file-system';
+import { PHOTOS_DIR } from '../constants/globals';
 
 const EntryScreen = ({navigation}) => {
 
@@ -48,11 +50,20 @@ const EntryScreen = ({navigation}) => {
         const isFirstLaunch = await getItem(STORAGE_KEYS.FIRST_TIME_WELCOME);
   
         if (isFirstLaunch === null) {
+          // Crear el directorio para las imagenes diarias
+          const dirInfo = await FileSystem.getInfoAsync(PHOTOS_DIR);
+          if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(PHOTOS_DIR, { intermediates: true });
+          }
+
+          // Guardar los datos de configucaión inicial
           const defaultSettings = {
 
           };
 
           await storeItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(defaultSettings));
+
+          // Navegar a la pantalla de bienvenida
           navigation.replace('Welcome');
         } else if (!JWT || user == null || !user?.accessToken || isTokenExpired(user?.accessToken)) {
           navigation.replace('Login', {});
