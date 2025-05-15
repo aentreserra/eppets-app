@@ -13,11 +13,9 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import {calculateAge, getBreedName} from '../../utils/shared';
 import BreedData from '../../lib/breedsData.json';
 import Modal from 'react-native-modal';
+import { useLevelUpModal } from '../../context/LevelUpModalContext';
 
 const PetsScreen = ({navigation}) => {
-
-  const {user, refreshUser} = useUser();
-  const toast = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -25,8 +23,13 @@ const PetsScreen = ({navigation}) => {
   const [firstFetch, setFirstFetch] = useState(true);
 
   const [pets, setPets] = useState([]);
+  const [selectedPetId, setSelectedPetId] = useState(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const {user, refreshUser, updateUser} = useUser();
+  const {showLevelUpModal} = useLevelUpModal();
+  const toast = useToast();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -36,6 +39,9 @@ const PetsScreen = ({navigation}) => {
     return unsubscribe;
   }, []);
 
+  /**
+   * Función para obtener las mascotas del usuario almacenadas localmente
+   */
   const fetchLocalPets = async () => {
     setIsLoading(true);
     try {
@@ -57,15 +63,22 @@ const PetsScreen = ({navigation}) => {
     }
   };
 
+  /**
+   * Función para obtener las mascotas del usuario desde el backend
+   * y almacenarlas localmente
+   */
   const fetchPets = async () => {
     setIsRefreshing(true);
     try {
-      const response = await tokenRefreshWrapper('getPetsFromUser', {}, toast, user, refreshUser);
+      const response = await tokenRefreshWrapper('getPetsFromUser', {}, toast, user, refreshUser, updateUser, showLevelUpModal);
       if (response.success) {
         const petsData = response.pets;
         setPets(petsData);
         await storeItem(STORAGE_KEYS.PETS_PROFILE, JSON.stringify(petsData));
       } else {
+        if (response.message === 'No pets found') {
+          return setPets([]);
+        }
         console.log("Error fetching pets:", response.message);
         toast.show('Error al obtener mascotas', {type: 'danger'});
         setPets([]);
@@ -78,9 +91,40 @@ const PetsScreen = ({navigation}) => {
     }
   };
 
+  /**
+   * Función para manejar la acción de eliminar una mascota
+   * @param {number} id - ID de la mascota seleccionada 
+   */
   const handleLongPress = (id) => {
     setIsModalVisible(true);
+    setSelectedPetId(id);
   }
+
+  /**
+   * Función para eliminar una mascota
+   */
+  const handleDeletePet = async () => {
+    setIsLoading(true);
+    try {
+      const response = await tokenRefreshWrapper('deletePetProfile', { petId: selectedPetId }, toast, user, refreshUser, updateUser, showLevelUpModal);
+      if (response.success) {
+        toast.show('Mascota eliminada', { type: 'success' });
+
+        const updatedPets = pets.filter(pet => pet.id !== selectedPetId);
+        setPets(updatedPets);
+
+        await storeItem(STORAGE_KEYS.PETS_PROFILE, JSON.stringify(updatedPets));
+        setIsModalVisible(false);
+      } else {
+        toast.show('Error al eliminar mascota', { type: 'danger' });
+      }
+    } catch (error) {
+      toast.show('Error inesperado', { type: 'danger' });
+      console.error("Error deleting pet:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.page}>
@@ -101,8 +145,8 @@ const PetsScreen = ({navigation}) => {
           <LatoText style={styles.title}>Mascotas</LatoText>
         </View>
         {(!isLoading && pets.length === 0) ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <LatoText style={{ fontSize: 18, color: '#191717' }}>No tienes mascotas registradas</LatoText>
+            <View>
+              <LatoText style={styles.noPetsFoundText}>No tienes mascotas registradas</LatoText>
             </View>
           ) : (
             <>
@@ -128,19 +172,21 @@ const PetsScreen = ({navigation}) => {
       </ScrollView>
       <Modal
         isVisible={isModalVisible}
-        onBackdropPress={() => setIsModalVisible(false)}
-        onBackButtonPress={() => setIsModalVisible(false)}
+        onBackdropPress={() => !isLoading && setIsModalVisible(false)}
+        onBackButtonPress={() => !isLoading && setIsModalVisible(false)}
         animationIn="slideInUp"
         animationOut="slideOutDown"
+        backdropTransitionOutTiming={0}
+        useNativeDriverForBackdrop
       >
         <View style={styles.modalContainerBox}>
           <LatoText style={styles.modalTitle}>¿Quieres eliminar esta mascota?</LatoText>
           <LatoText style={styles.modalDesc}>Esta acción no se puede deshacer</LatoText>
           <View style={styles.modalButtonsContainer}>
-            <TouchableOpacity style={styles.modalButton} onPress={() => {}}>
-              <LatoText style={styles.modalButtonText}>Eliminar</LatoText>
+            <TouchableOpacity style={styles.modalButton} onPress={() => !isLoading && handleDeletePet()}>
+              <LatoText style={styles.modalButtonText}>{isLoading ? 'Eliminando...' : 'Eliminar'}</LatoText>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+            <TouchableOpacity onPress={() => !isLoading && setIsModalVisible(false)}>
               <LatoText style={styles.modalCloseText}>Cancelar</LatoText>
             </TouchableOpacity>
           </View>
@@ -150,6 +196,9 @@ const PetsScreen = ({navigation}) => {
   )
 };
 
+/**
+ * Componente para mostrar cada mascota
+ */
 const PetItem = ({ name, type, breed, age, image, id, navigation, handleLongPress }) => {
   return (
     <TouchableOpacity activeOpacity={0.8} style={styles.petContainer} onLongPress={() => handleLongPress(id)} onPress={() => navigation.navigate('ManagePet', { petId: id })}>
@@ -184,6 +233,13 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: 20,
+  },
+  noPetsFoundText: {
+    fontSize: 16,
+    color: '#555151',
+    textAlign: 'center',
+    marginTop: 20,
     marginBottom: 20,
   },
   title: {
@@ -274,11 +330,13 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   modalButton: {
-    backgroundColor: '#EF9B93',
-    padding: 10,
-    borderRadius: 5,
-    width: '45%',
+    width: '100%',
     alignItems: 'center',
+    padding: 10,
+    paddingVertical: 15,
+    borderRadius: 99,
+    marginTop: 15,
+    backgroundColor: '#EF9B93',
   },
   modalButtonText: {
     fontSize: 16,

@@ -15,12 +15,11 @@ const getDayFormatted = (date) => {
 }
 
 const DailyPhotosScreen = ({navigation}) => {
-  const [allPhotos, setAllPhotos] = useState([]);
   const [calendarDays, setCalendarDays] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const flatListRef = useRef(null);
+  const [isDailyPhotoDone, setIsDailyPhotoDone] = useState(false);
 
   const currentYear = new Date().getFullYear();
   const todayKey = new Date().toDateString();
@@ -29,6 +28,9 @@ const DailyPhotosScreen = ({navigation}) => {
     loadPhotos();
   }, []);
 
+  /**
+   * Función para generar los datos del calendario
+   */
   const generateCalendarData = useCallback((photos) => {
     const photosMap = new Map();
     photos.forEach(photo => {
@@ -61,15 +63,30 @@ const DailyPhotosScreen = ({navigation}) => {
     return daysArray;
   }, [currentYear]);
 
+  /**
+   * Función para cargar las fotos diarias
+   */
   const loadPhotos = async () => {
-    let generatedData = null;
     try {
       setIsLoading(true);
       const photosData = await getItem(STORAGE_KEYS.DAILY_PHOTOS);
+      try {
         const parsedPhotos = JSON.parse(photosData) || [];
 
-        setAllPhotos(parsedPhotos);
-        generatedData = generateCalendarData(parsedPhotos);
+        const todayFormatted = new Date().toISOString().split('T')[0];
+
+        const todayPhoto = parsedPhotos.find(photo => photo.date.split('T')[0] === todayFormatted) || false;
+
+        if (todayPhoto) {
+          setIsDailyPhotoDone(true);
+        } else {
+          setIsDailyPhotoDone(false);
+        }
+
+        generateCalendarData(parsedPhotos);
+      } catch (error) {
+        console.error("Error parsing photos data:", error);
+      }
     } catch (error) {
       console.error("Error loading photos:", error);
     } finally {
@@ -77,22 +94,9 @@ const DailyPhotosScreen = ({navigation}) => {
     }
   };
 
-  const scrollToToday = (days) => {
-    if (!days || days.length === 0 || !flatListRef.current) {
-        return;
-    }
-
-    const todayIndex = days.findIndex(day => day.id === todayKey);
-
-    if (todayIndex !== -1) {
-        flatListRef.current.scrollToIndex({
-            index: todayIndex,
-            animated: true,
-            viewPosition: 0.5, // Center the item in the view
-        });
-    }
-  };
-
+  /**
+   * Componente para renderizar cada elemento del grid
+   */
   const renderGridItem = ({ item }) => {
     const isToday = item.id === todayKey;
   
@@ -116,19 +120,18 @@ const DailyPhotosScreen = ({navigation}) => {
     <SafeAreaView style={styles.page}>
       <View style={styles.headerContainer}>
         <MaterialIcons name="arrow-back-ios" size={24} color="#191717" onPress={() => navigation.goBack()} />
+        <LatoText style={styles.title}>Fotos Diarias</LatoText>
         <View style={styles.headerRow}>
           <TouchableOpacity activeOpacity={0.8} style={styles.roundedItem} onPress={() => setIsModalVisible(true)}>
             <MaterialIcons name="camera-alt" size={24} color="#EF9B93" />
           </TouchableOpacity>
         </View>
       </View>
-      <LatoText style={styles.title}>Fotos Diarias</LatoText>
       <View>
         {isLoading ? (
           <LatoText style={styles.loadingText}>Cargando fotos...</LatoText>
         ) : (
           <FlatList 
-            ref={flatListRef}
             data={calendarDays}
             keyExtractor={(item) => item.id.toString()}
             numColumns={5}
@@ -145,7 +148,7 @@ const DailyPhotosScreen = ({navigation}) => {
           />
         )}
       </View>
-      <PictureModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} />
+      <PictureModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} dailyPhotoDone={isDailyPhotoDone}/>
     </SafeAreaView>
   )
 }
@@ -160,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
     width: '100%',
     zIndex: 2,
   },
@@ -181,8 +184,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     color: '#191717',
-    textAlign: 'center',
-    marginBottom: 20,
+    textAlign: 'center', 
+    marginLeft: 10,
   },
   loadingText: {
     fontSize: 16,

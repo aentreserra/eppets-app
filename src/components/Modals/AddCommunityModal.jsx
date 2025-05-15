@@ -10,13 +10,15 @@ import DateTimePicker, {useDefaultStyles} from 'react-native-ui-datepicker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { getDayName, getMonthName, getTimeStampInHours } from '../../utils/shared';
 import { useToast } from 'react-native-toast-notifications';
+import { tokenRefreshWrapper } from '../../services/tokenRefreshWrapper';
+import { useUser } from '../../context/UserContext';
+import { useLevelUpModal } from '../../context/LevelUpModalContext';
+import Markdown, {MarkdownIt} from 'react-native-markdown-display';
+import { markdownStyles } from '../../constants/globals';
 
 const { height } = Dimensions.get('window');
 
 const AddCommunityModal = ({isVisible, setIsVisible}) => {
-
-  const defaultDatePickerStyles = useDefaultStyles();
-  const toast = useToast();
 
   const [isSelectingIcon, setIsSelectingIcon] = useState(false);
   const [isSelectingLocation, setIsSelectingLocation] = useState(false);
@@ -24,6 +26,8 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
   const [isSelectingTime, setIsSelectingTime] = useState(false);
 
   const [isTimeSelected, setIsTimeSelected] = useState(false);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [isMarkdownHelperVisible, setIsMarkdownHelperVisible] = useState(false);
 
   const [userLocation, setUserLocation] = useState({});
 
@@ -32,6 +36,8 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
     eventIcon: petEventIcons[Math.random() * petEventIcons.length | 0],
     eventUbication: '',
     eventDescription: '',
+    eventBody: '',
+    maxAttendees: undefined,
     eventDate: new Date(),
     eventTime: new Date(),
   });
@@ -42,6 +48,11 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
 
   const [scrollOffset, setScrollOffset] = useState(0);
   const scrollViewRef = useRef(null);
+
+  const defaultDatePickerStyles = useDefaultStyles();
+  const toast = useToast();
+  const {user, refreshUser, updateUser} = useUser();
+  const {showLevelUpModal} = useLevelUpModal();
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -56,6 +67,11 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
   }, []);
 
   const handleInputChange = (key, value, errorKey) => {
+    if (key === 'maxAttendees') {
+      if (value !== '' && isNaN(value)) {
+        return;
+      }
+    }
     setUserInput(prevState => ({...prevState, [key]: value}));
     setErrors(prev => prev === errorKey ? '' : prev);
   };
@@ -81,7 +97,7 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
     setIsSelectingLocation(false);
   };
 
-  const handelSubmit = () => {
+  const handelSubmit = async () => {
     if (userInput.eventName.length < 3) {
       setErrors('name');
       return;
@@ -94,12 +110,55 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
       setErrors('location');
       return;
     }
+    if (userInput.eventBody.length < 10) {
+      setErrors('body');
+      return;
+    }
+
     if (!isTimeSelected) {
       setErrors('date');
       return;
     }
-    // TODO BACKEND: Add event to community
-    handleClose();
+
+    let formattedBody;
+
+    try {
+      formattedBody = JSON.stringify(userInput.eventBody).slice(1, -1);
+    } catch (error) {
+      console.log('Error al formatear el body', error);
+    }
+     
+    try {
+      const formattedData = {
+        title: userInput.eventName,
+        description: userInput.eventDescription,
+        body: formattedBody,
+        notes: "",
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        eventDatetime: convertFullTime(),
+        maxAttendees: maxAttendees ? parseInt(userInput.maxAttendees) : null,
+        iconName: userInput.eventIcon,
+        address: locationStreet,
+      };
+      
+      const response = await tokenRefreshWrapper('addCommunityEvent', formattedData, toast, user, refreshUser, updateUser, showLevelUpModal);
+
+      if (response.success) {
+        toast.show('Evento creado con éxito', {type: 'success'});
+        handleClose();
+      } else {
+        if (response.message === "Missing required fields") {
+          toast.show('Faltan campos obligatorios', {type: 'danger'});
+          return;
+        }
+        toast.show('Error al crear el evento', {type: 'danger'});
+        console.log('Error al crear el evento', response.message);
+      }
+    } catch (error) {
+      console.log('Error al guardar el evento', error);
+      toast.show('Error inesperado', {type: 'danger'});
+    }
   };
 
   const handleClose = () => {
@@ -120,6 +179,14 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
     setIsTimeSelected(false);
   };
 
+  const convertFullTime = () => {
+    const date = new Date(userInput.eventDate);
+    const time = new Date(userInput.eventTime);
+    const fullDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes(), time.getSeconds());
+    console.log('Full date: ', fullDate);
+    return fullDate.toUTCString();
+  } 
+
   return (
     <Modal
       isVisible={isVisible}
@@ -130,11 +197,13 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
       scrollTo={handleScrollTo}
       scrollOffset={scrollOffset}
       style={styles.modalContainer}
+      backdropTransitionOutTiming={0}
+      useNativeDriverForBackdrop
     >
       {isSelectingLocation && <MapSelection initialLocation={userLocation} close={handleCloseMap}/>}
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={[styles.modalContent, { height: height * 0.82 }]}>
+          <View style={styles.modalContent}>
             <LatoText style={styles.title}>Añadir evento a la comunidad</LatoText>
             <View style={styles.inputContainer}>
               <LatoText style={styles.modalTitle}>Icono:</LatoText>
@@ -172,7 +241,7 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
             <View style={styles.inputContainer}>
               <LatoText style={styles.modalTitle}>Nombre del Evento: </LatoText>
               <TextInput
-                placeholder='Ej: Quedada de perros en Barcelona'
+                placeholder='Nombre especifico para el evento'
                 placeholderTextColor="#ADA9A7"
                 value={userInput.eventName}
                 onChangeText={(text) => handleInputChange('eventName', text, 'name')}
@@ -183,13 +252,45 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
             <View style={styles.inputContainer}>
               <LatoText style={styles.modalTitle}>Descripción: </LatoText>
               <TextInput
-                placeholder='Ej: Quedada de competición de perros en Barcelona'
+                placeholder='Descripción corta del evento'
                 placeholderTextColor="#ADA9A7"
                 value={userInput.eventDescription}
                 onChangeText={(text) => handleInputChange('eventDescription', text, 'description')}
                 style={[styles.input, {borderColor: errors === 'description' ? '#EF6C61' : 'transparent'}]}
               />
               {errors === 'description' && <LatoText style={styles.errorText}>La descripción es obligatoria</LatoText>}
+            </View>
+            <View style={styles.inputContainer}>
+              <View style={styles.labelContainer}>
+                <LatoText style={styles.modalTitle}>Contenido: </LatoText>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => setIsMarkdownHelperVisible(true)}> 
+                  <MaterialCommunityIcons name="information-outline" size={18} color="#ADA9A7" />
+                </TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.8} style={styles.markdownButton} onPress={() => setIsPreviewVisible(true)}>
+                  <MaterialCommunityIcons name="eye" size={18} color="#FFF" />
+                  <LatoText style={styles.previewText}>Previsualizar</LatoText>
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                placeholder='Contenido del evento en formato markdown'
+                placeholderTextColor="#ADA9A7"
+                multiline={true}
+                value={userInput.eventBody}
+                onChangeText={(text) => handleInputChange('eventBody', text, 'body')}
+                style={[styles.input, {borderColor: errors === 'body' ? '#EF6C61' : 'transparent', height: 70, maxHeight: 120, textAlignVertical: 'top'}]}
+              />
+              {errors === 'body' && <LatoText style={styles.errorText}>El cuerpo del evento es obligatorio</LatoText>}
+            </View>
+            <View style={styles.inputContainer}>
+              <LatoText style={styles.modalTitle}>Máximos asistentes: </LatoText>
+              <TextInput
+                placeholder='Dejar en blanco para ilimitado'
+                keyboardType='numeric'
+                placeholderTextColor="#ADA9A7"
+                value={userInput.maxAttendees}
+                onChangeText={(text) => handleInputChange('maxAttendees', text, 'maxAttendees')}
+                style={styles.input}
+              />
             </View>
             <View style={styles.inputContainer}>
               <LatoText style={styles.modalTitle}>Ubicación: </LatoText>
@@ -267,7 +368,59 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
             </View>
           </View>
         </ScrollView>
-      ç</KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+      <Modal
+        isVisible={isPreviewVisible}
+        onBackdropPress={() => setIsPreviewVisible(false)}
+        onBackButtonPress={() => setIsPreviewVisible(false)}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+      >
+        <View style={styles.previewContainer}>
+          <TouchableOpacity activeOpacity={0.8} onPress={() => setIsPreviewVisible(false)} style={styles.closeButton}> 
+            <MaterialCommunityIcons name="close" size={30} color="#EF9B93" />
+          </TouchableOpacity>
+          <Markdown 
+            style={markdownStyles}
+            markdownit={
+              MarkdownIt({typographer: true, breaks: true}).disable([ 'link', 'image' ])
+            }
+          >
+            {userInput.eventBody || ''}
+          </Markdown>
+        </View>
+      </Modal>
+      <Modal
+        isVisible={isMarkdownHelperVisible}
+        onBackdropPress={() => setIsMarkdownHelperVisible(false)}
+        onBackButtonPress={() => setIsMarkdownHelperVisible(false)}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+      >
+        <View style={styles.helperContainer}>
+          <LatoText style={styles.helperTitle}>Ayuda de Markdown</LatoText>
+          <LatoText style={styles.helperText}>Puedes usar el siguiente formato para darle estilo a tu contenido, los ejemplos se muestran entre ` `:</LatoText>
+          <LatoText style={styles.helperText}>Título principal: <LatoText style={styles.examplesText}>`# Texto`</LatoText>: </LatoText>
+          <Markdown style={markdownStyles}># Título Principal</Markdown>
+          <LatoText style={styles.helperText}>Título secundario: <LatoText style={styles.examplesText}>`## Texto`</LatoText>: </LatoText>
+          <Markdown style={markdownStyles}># Título Secundario</Markdown>
+          <LatoText style={styles.helperText}>Negrita: <LatoText style={styles.examplesText}>`**Texto**`</LatoText>:</LatoText>
+          <Markdown style={markdownStyles}>**Texto en negrita**</Markdown>
+          <LatoText style={styles.helperText}>Cursiva: <LatoText style={styles.examplesText}>`*Texto*`</LatoText>: </LatoText>
+          <Markdown style={markdownStyles}>*Texto en cursiva*</Markdown>
+          <LatoText style={styles.helperText}>Lista desordenada: <LatoText style={styles.examplesText}>`- Item`</LatoText>: </LatoText>
+          <Markdown style={markdownStyles}>- Elemento de lista</Markdown>
+          <LatoText style={styles.helperText}>Lista ordenada: <LatoText style={styles.examplesText}>`1. Item`</LatoText>: </LatoText>
+          <Markdown style={markdownStyles}>1. Elemento de lista</Markdown>
+          <LatoText style={styles.helperText}>Cita: <LatoText style={styles.examplesText}>{"`> Texto`"}</LatoText>:</LatoText>
+          <Markdown style={markdownStyles}>{"> Texto de cita"}</Markdown>
+          <LatoText style={styles.helperText}> Separador: <LatoText style={styles.examplesText}>`---`</LatoText>: </LatoText>
+          <Markdown style={markdownStyles}>---</Markdown>
+          <TouchableOpacity activeOpacity={0.8} onPress={() => setIsMarkdownHelperVisible(false)} style={styles.saveButton}>
+            <LatoText style={styles.saveButtonText}>Cerrar</LatoText>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </Modal>
   )
 }
@@ -283,7 +436,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 20,
-    gap: 17,
+    paddingBottom: 50,
+    gap: 12,
   },
   title: {
     fontSize: 19,
@@ -309,6 +463,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F6F6F6',
     borderRadius: 10,
     paddingHorizontal: 15,
+    paddingVertical: 5,
     fontSize: 16,
     color: '#191717',
     borderWidth: 1,
@@ -419,6 +574,56 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     marginTop: -15,
+  },
+  labelContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  markdownButton: {
+    position: 'absolute',
+    flexDirection: 'row',
+    right: 0,
+    top: -5,
+    backgroundColor: '#EF9B93',
+    borderRadius: 99,
+    padding: 5,
+    gap: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewText: {
+    fontSize: 13,
+    color: '#FFF',
+  },
+  previewContainer: {
+    backgroundColor: '#EEEAE8',
+    borderRadius: 10,
+    padding: 10,
+    height: '100%',
+    width: '100%',
+    paddingTop: 50,
+  },
+  helperContainer: {
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 20,
+    gap: 10,
+    width: '100%',
+  },
+  helperTitle: {
+    fontSize: 20,
+    color: '#191717',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  helperText: {
+    fontSize: 15,
+    color: '#191717',
+  },
+  examplesText: {
+    color: '#EF9B93',
   },
 });
 

@@ -1,39 +1,83 @@
 import { View, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LatoText from '../../components/Fonts/LatoText'
 import DateTimePicker, {useDefaultStyles} from 'react-native-ui-datepicker'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { getTimeStampInHours, getDayName, getMonthName } from '../../utils/shared'
 import AddReminder from '../../components/Modals/AddReminder'
+import { useUser } from '../../context/UserContext'
+import ReminderItem from '../../components/UI/ReminderItem'
+import ReminderModal from '../../components/Modals/ReminderModal'
+import RemoveReminderModal from '../../components/Modals/RemoveReminderModal'
 
-const CalendarScreen = () => {
-
-  const defaultDatePickerStyles = useDefaultStyles('light');
+const CalendarScreen = ({route, navigation}) => {
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [isAddReminderVisible, setIsAddReminderVisible] = useState(false);
+  const [isReminderModalVisible, setIsReminderModalVisible] = useState(false);
+  const [isRemoveReminderModalVisible, setIsRemoveReminderModalVisible] = useState(false);
+  
+  const [userReminders, setUserReminders] = useState([]);
+  const [selectedReminder, setSelectedReminder] = useState(null);
 
-  const [userTodos, setUserTodos] = useState([
-    {todoType: 'Vacuna', todoName: 'Vacuna de rabia', todoTimeStamp: new Date("2024-04-25T17:58:00").getTime(), todoDesc: 'Vacuna de rabia para Luna', petIcon: 'https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg', petName: 'Luna', id: 1},
-    {todoType: 'Vacuna', todoName: 'Vacuna de rabia', todoTimeStamp: new Date("2025-04-25T17:58:00").getTime(), todoDesc: 'Vacuna de rabia para Luna', petIcon: 'https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg', petName: 'Luna', id: 1},
-    {todoType: 'Píldora', todoName: 'Píldora de desparacitación', todoTimeStamp: new Date("2025-04-26T18:06:00").getTime(), todoDesc: 'Píldora de desparacitación para Luna', petIcon: 'https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg', petName: 'Luna', id: 2},
-    {todoType: 'Cita', todoName: 'Cita con el veterinario', todoTimeStamp: new Date("2025-04-26T19:25:00").getTime(), todoDesc: 'Cita con el veterinario para Luna', petIcon: 'https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg', petName: 'Luna', id: 3},
-  ]);
+  const {user} = useUser();
+  const defaultDatePickerStyles = useDefaultStyles('light');
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getReminders();
+      if (route.params?.defaultDay) {
+        setSelectedDate(new Date());
+        navigation.setParams({screen:undefined, defaultDay: null });
+      }
+    });
+
+    getReminders();
+
+    return unsubscribe;
+  }, []);
+
+  /**
+   * Función para obtener los recordatorios del usuario
+   */
+  const getReminders = () => {
+    const reminders = user.reminders || [];
+    setUserReminders(reminders);
+  };
+
+  /**
+   * Función para manejar el cambio de fecha en el calendario
+   * @param {Date} date - Fecha seleccionada
+   */
   const handleDateChange = (date) => {
     setSelectedDate(date);
   }
 
-  const getDayTodos = userTodos.filter(item => {
-    const date = new Date(item.todoTimeStamp);
+  /**
+   * Función para obtener los recordatorios del día seleccionado
+   */
+  const getDayTodos = userReminders.filter(item => {
+    const date = new Date(item.next_trigger_datetime_utc);
     return date.getDate() === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear();
   });
 
+  /**
+   * Función para manejar cerrar los modales y recargar los recordatorios
+   */
+  const handleReloadReminders = () => {
+    setIsAddReminderVisible(false);
+    setIsReminderModalVisible(false);
+    setIsRemoveReminderModalVisible(false);
+    getReminders();
+  };
+
   return (
     <SafeAreaView style={styles.page}>
-      <AddReminder isVisible={isAddReminderVisible} setIsVisible={setIsAddReminderVisible} defaultDay={selectedDate}/>
+      <AddReminder isVisible={isAddReminderVisible} setIsVisible={handleReloadReminders} defaultDay={selectedDate}/>
+      <ReminderModal isVisible={isReminderModalVisible} setIsVisible={setIsReminderModalVisible} data={selectedReminder}/>
+      <RemoveReminderModal isVisible={isRemoveReminderModalVisible} setIsVisible={setIsRemoveReminderModalVisible} data={selectedReminder} onClose={handleReloadReminders}/>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <LatoText style={styles.title}>Calendario</LatoText>
@@ -61,17 +105,14 @@ const CalendarScreen = () => {
         <View style={styles.bottomContainer}>
           <LatoText style={styles.dateTitle}>{getDayName(selectedDate)}, {selectedDate.getDate()} de {getMonthName(selectedDate)}</LatoText>
           <View style={styles.itemsContainer}>
-            {getDayTodos.length > 1 ? (
-              getDayTodos.map((item) => (
-                <Item 
-                  key={item.id}
-                  todoType={item.todoType}
-                  todoName={item.todoName}
-                  todoTimeStamp={item.todoTimeStamp}
-                  todoDesc={item.todoDesc}
-                  petIcon={item.petIcon}
-                  petName={item.petName}
-                  id={item.id}
+            {getDayTodos.length > 0 ? (
+              getDayTodos.map((item, index) => (
+                <ReminderItem 
+                  key={index}
+                  item={item}
+                  isManagePet={true}
+                  onClick={() => [setSelectedReminder(item), setIsReminderModalVisible(true)]}
+                  onLongPress={() => [setSelectedReminder(item), setIsRemoveReminderModalVisible(true)]}
                 />
               ))
               ) : (
@@ -91,29 +132,6 @@ const CalendarScreen = () => {
     </SafeAreaView>
   )
 }
-
-const Item = ({todoType, todoName, todoTimeStamp, todoDesc, petIcon, petName, id}) => (
-  <View style={styles.itemContainer}>
-    <View style={styles.itemTopContainer}>
-      <View style={styles.itemImageContainer}>
-        <Image source={{uri: petIcon}} style={styles.itemImage} />
-        <View style={styles.itemIconContainer}>
-          <MaterialCommunityIcons name={todoType === "pill" ? "pill" : todoType === "date" ?  "calendar-heart" : "needle"} size={16} color="#EF9B93" />
-        </View>
-      </View>
-      <View style={styles.itemMiddleContainer}>
-        <LatoText numberOfLines={1} style={styles.todoName}>{todoName}</LatoText>
-        <LatoText numberOfLines={1} style={styles.todoInfo}>{petName} · {getTimeStampInHours(todoTimeStamp)}</LatoText>
-      </View>
-      <View>
-        <LatoText style={styles.seeMoreText}>Ver más <MaterialCommunityIcons name='arrow-right' /></LatoText>
-      </View>
-    </View>
-    <View style={styles.itemDescContainer}>
-      <LatoText numberOfLines={3} style={styles.descText}>{todoDesc}</LatoText>
-    </View>
-  </View>
-);
 
 const styles = StyleSheet.create({
   page: {
@@ -154,75 +172,8 @@ const styles = StyleSheet.create({
   itemsContainer: {
     width: '100%',
     marginTop: 10,
-    marginBottom: 50,
-  },
-  itemContainer: {
-    backgroundColor: '#F6F6F6',
-    borderRadius: 15,
-    padding: 10,
-    marginBottom: 10,
-    shadowColor: '#00000050',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  itemTopContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  itemImageContainer: {
-    position: 'relative',
-    width: 45,
-    height: 45,
-    borderRadius: 25,
-    backgroundColor: '#FFF',
-  },
-  itemImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 25,
-  },
-  itemIconContainer: {
-    position: 'absolute',
-    bottom: 1,
-    right: -1,
-    width: 21,
-    height: 21,
-    borderRadius: 99,
-    backgroundColor: '#EDDFD0',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  itemMiddleContainer: {
-    width: '100%',
-    paddingLeft: 10,
-    justifyContent: 'center',
-    flex: 1,
-  },
-  todoName: {
-    fontSize: 15,
-    color: '#191717',
-  },
-  todoInfo: {
-    fontSize: 13,
-    color: '#555151',
-  },
-  seeMoreText: {
-    fontSize: 12,
-    color: '#555151',
-  },
-  itemDescContainer: {
-    width: '100%',
-    marginTop: 10,
-  },
-  descText: {
-    fontSize: 13,
-    color: '#191717',
+    marginBottom: 55,
+    gap: 10,
   },
   noDataContainer: {
     marginTop: 20,

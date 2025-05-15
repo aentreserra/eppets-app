@@ -9,6 +9,11 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import { navigationRef } from './src/utils/RootNavigation';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import { firebase } from '@react-native-firebase/messaging';
+import { getItem, storeItem } from './src/utils/storage';
+import { STORAGE_KEYS } from './src/constants/storageKeys';
+import { LevelUpModalProvider } from './src/context/LevelUpModalContext';
+import LevelUpModal from './src/components/Modals/LevelUpModal';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,11 +25,40 @@ export default function App() {
   });
 
   useEffect(() => {
+    const onForegroundNotificationUnsubscribe = firebase.messaging().onMessage(async remoteMessage => {
+      console.log('FCM Message data (foreground):', JSON.stringify(remoteMessage));
+
+      if (!remoteMessage && (remoteMessage.data || remoteMessage.notification)) return;
+
+      const savedNotifications = await getItem(STORAGE_KEYS.NOTIFICATIONS);
+
+      try {
+        let notifications = savedNotifications ? JSON.parse(savedNotifications) : [];
+
+        const notificationToStore = {
+          title: remoteMessage.notification.title,
+          body: remoteMessage.notification.body,
+          data: remoteMessage.data ? { ...remoteMessage.data } : {},
+          timestamp: new Date().getTime(),
+        };
+
+        notifications.push(notificationToStore);
+        
+        await storeItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
+      } catch (error) {
+        console.error('Error parsing notifications:', error);
+      }
+    });
+
+    return onForegroundNotificationUnsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
-
+  
   if (!fontsLoaded) {
     return null;
   }
@@ -43,10 +77,13 @@ export default function App() {
           normalColor='#4c96e0'
         >
           <UserProvider>
-            <NavigationContainer ref={navigationRef}>
-              <StackNavigation />
-              <StatusBar style="light" />
-            </NavigationContainer>
+            <LevelUpModalProvider>
+              <NavigationContainer ref={navigationRef}>
+                <StackNavigation />
+                <StatusBar style="light" />
+              </NavigationContainer>
+              <LevelUpModal />
+            </LevelUpModalProvider>
           </UserProvider>
         </ToastProvider>
       </SafeAreaProvider>

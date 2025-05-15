@@ -54,7 +54,9 @@ export const tokenRefreshWrapper = async (
   data,
   toast,
   user,
-  refreshUser
+  refreshUser,
+  updateUser,
+  showLevelUpModal
 ) => {
   const validUser = await ensureValidToken(user, refreshUser);
 
@@ -69,7 +71,7 @@ export const tokenRefreshWrapper = async (
   }
 
   try {
-    return await callFirebaseFunction(functionName, requestData, toast);
+    return await callFirebaseFunction(functionName, requestData, toast, user, updateUser, showLevelUpModal);
   } catch (error) {
     // Varificamos si el error es de token
     if (error.message.includes("Invalid token")) {

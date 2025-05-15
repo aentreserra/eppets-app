@@ -26,7 +26,6 @@ export const UserProvider = ({ children }) => {
 
   /**
    * Función para obtener el access token del usuario desde el backend usando el refresh token
-   * @returns {Promise<void>}
    */
   const getUserData = async () => {
     try {
@@ -94,7 +93,8 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   /**
-   * Function to refresh user data from backend
+   * Función para actualizar el access token del usuario
+   * y guaradar el nuevo refresh token
    */
   const refreshUser = async () => {
     try {
@@ -144,15 +144,16 @@ export const UserProvider = ({ children }) => {
     }
   };
   /**
-   * Updates user data after login, register or logout
-   * @param userData - User data to update
+   * Función para actualizar los datos del usuario
+   * @param userData - Objeto con los datos a actualizar
    */
   const updateUser = (userData) => {
     setUser(userData);
   };
 
   /**
-   * Get current user state (for synchronous access to latest user data)
+   * Función para obtener los datos del usuario
+   * @returns {object} - Objeto con los datos del usuario
    */
   const getUser = () => {
     return user;
@@ -166,7 +167,7 @@ export const UserProvider = ({ children }) => {
 };
 
 /**
- * Custom hook to use user data and refresh user data
- * @returns Object with user data and function to refresh user data
+ * Hook para acceder al contexto del usuario
+ * @returns {object} - Objeto con los datos del usuario
  */
 export const useUser = () => useContext(UserContext);

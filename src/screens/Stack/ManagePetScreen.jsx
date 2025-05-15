@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native'
+import { View, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LatoText from '../../components/Fonts/LatoText';
@@ -15,24 +15,44 @@ import DateTimePicker, {useDefaultStyles} from 'react-native-ui-datepicker';
 import { tokenRefreshWrapper } from '../../services/tokenRefreshWrapper';
 import { useUser } from '../../context/UserContext';
 import AddReminder from '../../components/Modals/AddReminder';
+import ReminderItem from '../../components/UI/ReminderItem';
+import ReminderModal from '../../components/Modals/ReminderModal';
+import loadingGif from '../../gifs/loading.gif';
+import { useLevelUpModal } from '../../context/LevelUpModalContext';
+import RemoveReminderModal from '../../components/Modals/RemoveReminderModal';
+import AddHistoryModal from '../../components/Modals/AddHistoryModal';
+import MedicalRecordsInfoModal from '../../components/Modals/MedicalRecordsInfoModal';
 
 const ManagePetScreen = ({route, navigation}) => {
 
   const { petId } = route.params || {};
 
   const [petTab, setPetTab] = useState(0);
+
   const [petData, setPetData] = useState(null);
+  const [petHistory, setPetHistory] = useState([]);
+  const [petReminders, setPetReminders] = useState([]);
+  const [petParameters, setPetParameters] = useState([]);
 
   const [newWeight, setNewWeight] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(false);
 
+  const [isShowHistoryModal, setIsShowHistoryModal] = useState(false);
+  const [isShowMedicalRecordsInfo, setIsShowMedicalRecordsInfo] = useState(false);
   const [isShowAddReminder, setIsShowAddReminder] = useState(false);
+  const [isShowReminderInfo, setIsShowReminderInfo] = useState(false);
+  const [isRemoveReminderModalVisible, setIsRemoveReminderModalVisible] = useState(false);
   const [isWeightModalVisible, setIsWeightModalVisible] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [reminderToShow, setReminderToShow] = useState(null);
+  const [medicalRecordToShow, setMedicalRecordToShow] = useState(null);
 
-  const {user, refreshUser} = useUser();
+  const {user, refreshUser, updateUser} = useUser();
+  const {showLevelUpModal} = useLevelUpModal();
   const defaultDatePickerStyles = useDefaultStyles('light');
   const toast = useToast(); 
 
@@ -48,18 +68,36 @@ const ManagePetScreen = ({route, navigation}) => {
     console.log('Pet Tab: ', petTab);
   }, [petTab]);
 
+  /**
+   * Función para obtener los datos de la mascota almacenados
+   */
   const getStoredPetData = async () => {
     setIsLoading(true);
     try {
       const data = await getItem(STORAGE_KEYS.PETS_PROFILE);
+      const medicalRecords = await getItem(STORAGE_KEYS.MEDICAL_RECORDS);
       if (data) {
-        const parsedData = JSON.parse(data);
+        const parsedData = JSON.parse(data) || [];
+        const parsedRecords = JSON.parse(medicalRecords) || [];
+
         const pet = parsedData.find(p => parseInt(p.id) === parseInt(petId));
-        console.log("Pet data:", pet);
+        const petHistory = parsedRecords.filter(item => parseInt(item.pet_id) === parseInt(petId));
+        const reminders = user.reminders.filter(item => parseInt(item.pet_id) === parseInt(petId));
+
         if (pet) {
+          const breedData = BreedData[pet.species].find(item => item.value === pet.breed) || null;
+          setPetParameters(breedData?.parameters || null);
           setPetData(pet);
         } else {
           console.log("Pet not found");
+        }
+
+        if (reminders) {
+          setPetReminders(reminders);
+        }
+
+        if (petHistory) {
+          setPetHistory(petHistory);
         }
       }
     } catch (error) {
@@ -69,45 +107,144 @@ const ManagePetScreen = ({route, navigation}) => {
     }
   };
 
+  /**
+   * Función para manejar el cambio de peso de la mascota
+   */
   const handleChangeWeight = async () => {
     if (newWeight === null || newWeight === "") {
       toast.show('Por favor, introduce un peso válido', { type: 'danger' });
       return;
     }
+
+    setIsDataLoading(true);
+
+    const formattedData = {
+      petId: petData.id,
+      newWeight,
+      date: selectedDate.toDateString(),
+    };
+
+    console.log("Formatted Data: ", formattedData);
+
+    try {
+      const response = await tokenRefreshWrapper('updatePetWeight', formattedData, toast, user, refreshUser, updateUser, showLevelUpModal);
+
+      if (response.success) {
+        setIsWeightModalVisible(false);
+        setNewWeight(null);
+        setSelectedDate(new Date());
   
-    const response = await tokenRefreshWrapper('updatePetWeight', {petId: petData.id, newWeight}, toast, user, refreshUser);
-
-    if (response.success) {
-      setIsWeightModalVisible(false);
-      setNewWeight(null);
-      setSelectedDate(new Date());
-
-      setPetData(prevState => ({
-        ...prevState,
-        weight: newWeight,
-      }));
-
-      const storedPets = await getItem(STORAGE_KEYS.PETS_PROFILE);
-
-      if (storedPets) {
-        const parsedPets = JSON.parse(storedPets);
-        const updatedPetIndex = parsedPets.findIndex(p => p.id === petData.id);
-        if (updatedPetIndex !== -1) {
-          parsedPets[updatedPetIndex].weight = newWeight;
-          await storeItem(STORAGE_KEYS.PETS_PROFILE, JSON.stringify(parsedPets));
+        setPetData(prevState => ({
+          ...prevState,
+          weight: newWeight,
+        }));
+  
+        const storedPets = await getItem(STORAGE_KEYS.PETS_PROFILE);
+  
+        if (storedPets) {
+          const parsedPets = JSON.parse(storedPets);
+          const updatedPetIndex = parsedPets.findIndex(p => p.id === petData.id);
+          if (updatedPetIndex !== -1) {
+            parsedPets[updatedPetIndex].weight = newWeight;
+            await storeItem(STORAGE_KEYS.PETS_PROFILE, JSON.stringify(parsedPets));
+          }
+        } else {
+          console.log("No pets found in storage");
         }
-      } else {
-        console.log("No pets found in storage");
+  
+        toast.show('Peso actualizado correctamente', { type: 'success' });
       }
+    } catch (error) {
+      console.error("Error updating pet weight:", error);
+    } finally {
+      setIsDataLoading(false);
+    }
+  };
 
-      toast.show('Peso actualizado correctamente', { type: 'success' });
+  /**
+   * Función para manejar el cierre de los modales
+   */
+  const handleCloseModal = async () => {
+    setIsRemoveReminderModalVisible(false);
+    setIsShowHistoryModal(false);
+    setIsShowAddReminder(false);
+    setIsShowReminderInfo(false);
+    setIsWeightModalVisible(false);
+    setIsShowMedicalRecordsInfo(false);
+    await getStoredPetData();
+  };
+
+  /**
+   * Función para mostrar el modal de selección de fecha
+   */
+  const fetchPetData = async () => {
+    setIsRefreshing(true);
+    try {
+      const response = await tokenRefreshWrapper('getPetProfile', { petId }, toast, user, refreshUser, updateUser, showLevelUpModal);
+
+      if (response.success) {
+        const petData = response.petProfile;
+        const medicalRecords = response.medicalRecords;
+        setPetData(petData);
+        setPetHistory(medicalRecords);
+
+        try {
+          const storedPets = await getItem(STORAGE_KEYS.PETS_PROFILE);
+          const parsedPets = JSON.parse(storedPets) || [];
+          let tempPets = parsedPets.filter(p => p.id !== petId);
+          tempPets.push(petData);
+          await storeItem(STORAGE_KEYS.PETS_PROFILE, JSON.stringify(tempPets));
+
+          const storedMedicalRecords = await getItem(STORAGE_KEYS.MEDICAL_RECORDS);
+          const parsedRecords = JSON.parse(storedMedicalRecords) || [];
+          let tempRecords = parsedRecords.filter(p => p.pet_id !== petId);
+          tempRecords.push(...medicalRecords);
+          await storeItem(STORAGE_KEYS.MEDICAL_RECORDS, JSON.stringify(tempRecords));
+        } catch (error) {
+          console.error("Error updating saved data:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching pet data:", error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
   return (
     <SafeAreaView style={styles.page}>
+      {petTab === 0 && (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.fab}
+          onPress={() => setIsShowHistoryModal(true)}
+        >
+          <LatoText style={styles.fabText}>Añadir historial</LatoText>
+          <MaterialIcons name="add" size={24} color="#FFF" />
+        </TouchableOpacity>
+      )}
+      {petTab === 1 && (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.fab}
+          onPress={() => setIsShowAddReminder(true)}
+        >
+          <LatoText style={styles.fabText}>Añadir recordatorio</LatoText>
+          <MaterialIcons name="add" size={24} color="#FFF" />
+        </TouchableOpacity>
+      )}
+      <AddHistoryModal isVisible={isShowHistoryModal} onClose={handleCloseModal} defaultPet={petData}/>
+      <MedicalRecordsInfoModal isVisible={isShowMedicalRecordsInfo} item={medicalRecordToShow} onClose={handleCloseModal} />
       <AddReminder isVisible={isShowAddReminder} setIsVisible={setIsShowAddReminder} defaultPet={petData} />
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+      <ReminderModal isVisible={isShowReminderInfo} setIsVisible={setIsShowReminderInfo} data={reminderToShow}/>
+      <RemoveReminderModal isVisible={isRemoveReminderModalVisible} data={reminderToShow} onClose={handleCloseModal}/>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={fetchPetData} />
+        }
+      >
         <View style={styles.headerContainer}>
           <MaterialIcons name="arrow-back-ios" size={24} color="#191717" onPress={() => navigation.goBack()} />
             <View style={styles.headerRow}>
@@ -171,18 +308,320 @@ const ManagePetScreen = ({route, navigation}) => {
               {
                 petTab === 0 ? (
                   <>
-                    <BoxItem 
-                      
-                    />
-                    <BoxItem />
-                    <BoxItem />
-                    <BoxItem />
-                    <BoxItem />
+                  {
+                    petHistory.length > 0 ? petHistory.map((item) => (
+                      <BoxItem key={item.id} item={item} onPress={() => [setIsShowMedicalRecordsInfo(true), setMedicalRecordToShow(item)]}/>
+                    )) : (
+                      <View>
+                        <LatoText style={styles.noDataText}>No tienes historial para {petData.name}</LatoText>
+                        <TouchableOpacity activeOpacity={0.8} onPress={() => setIsShowHistoryModal(true)}>
+                          <LatoText style={styles.clickableText}>Añadir nuevo historial</LatoText>
+                        </TouchableOpacity>
+                      </View>
+                    )
+                  }
                   </>
                 ) : petTab === 1 ? (
-                  <LatoText style={{fontSize: 16, color: '#242222'}}>Recordatorios</LatoText>
+                  <>
+                    {
+                      petReminders.length > 0 ? petReminders.map((item) => (
+                        <ReminderItem key={item.id} item={item} isManagePet={true} onClick={() => [setIsShowReminderInfo(true), setReminderToShow(item)]} onLongPress={() => [setIsRemoveReminderModalVisible(true), setReminderToShow(item)]}/>
+                      )) : (
+                        <LatoText style={styles.noDataText}>No tienes recordatorios para {petData.name}</LatoText>
+                      )
+                    }
+                  </>
                 ) : (
-                  <LatoText style={{fontSize: 16, color: '#242222'}}>Parámetros</LatoText>
+                  <>
+                   {petParameters !== null ? (
+                       petData.species === 'primate' && petParameters.add_pet_alert ? (
+                        <View style={[styles.paramsContainer, styles.primateWarningContainer]}>
+                          <View style={styles.primateWarningIconContainer}>
+                            <MaterialCommunityIcons name="alert-octagon-outline" size={48} color="#E65100" />
+                            <LatoText style={styles.primateWarningTitle}>{petParameters.name || "Advertencia sobre Primates"}</LatoText>
+                          </View>
+                          {Object.entries(petParameters).map(([key, value]) => {
+                            const MAPPED_KEYS = {
+                                add_pet_alert: "Alerta Importante",
+                                ethical_considerations: "Consideraciones Éticas",
+                                legal_status_warning: "Estado Legal",
+                                safety_risk: "Riesgos de Seguridad",
+                                recommendation: "Recomendación"
+                            };
+                            if (Array.isArray(value) && MAPPED_KEYS[key]) {
+                              return (
+                                <View key={key} style={{ marginBottom: 12 }}>
+                                  <LatoText style={styles.primateSectionTitle}>{MAPPED_KEYS[key]}</LatoText>
+                                  {value.map((item, index) => (
+                                    <LatoText key={index} style={styles.primateWarningText}>• {item}</LatoText>
+                                  ))}
+                                </View>
+                              );
+                            }
+                            return null;
+                          })}
+                        </View>
+                      ) : (
+                      <View style={styles.paramsContainer}>
+                        {/* Esperanza de Vida */}
+                        {petParameters.lifespan && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}>
+                              <MaterialCommunityIcons name="heart-pulse" size={20} color="#EF9B93" />
+                            </View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Esperanza de vida</LatoText>
+                              <LatoText style={styles.paramData}>
+                                {petParameters.lifespan.min} - {petParameters.lifespan.max} {petParameters.lifespan.unit || 'años'}
+                              </LatoText>
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Peso */}
+                        {petParameters.weight && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}>
+                              <MaterialCommunityIcons name="scale-bathroom" size={20} color="#EF9B93" />
+                            </View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Peso Referencial</LatoText>
+                              {petParameters.weight.ideal_min !== undefined && petParameters.weight.ideal_max !== undefined ? (
+                                <LatoText style={styles.paramData}>
+                                  Ideal: {petParameters.weight.ideal_min} - {petParameters.weight.ideal_max} {petParameters.weight.unit}
+                                </LatoText>
+                              ) : null}
+                              {petParameters.weight.min_acceptable !== undefined && petParameters.weight.max_acceptable !== undefined ? (
+                                <LatoText style={styles.paramData}>
+                                  Aceptable: {petParameters.weight.min_acceptable} - {petParameters.weight.max_acceptable} {petParameters.weight.unit}
+                                </LatoText>
+                              ) : null}
+                               {!petParameters.weight.ideal_min && !petParameters.weight.min_acceptable && petParameters.weight.approx ? (
+                                <LatoText style={styles.paramData}>
+                                  Aprox: {petParameters.weight.approx} {petParameters.weight.unit}
+                                </LatoText>
+                              ) : null}
+                              {petParameters.weight.notes && <LatoText style={styles.paramNote}>Nota: {petParameters.weight.notes}</LatoText>}
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Tamaño / Longitud Adulta */}
+                        {(petParameters.size_category || petParameters.adult_length) && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}>
+                              <MaterialCommunityIcons name="ruler-square" size={20} color="#EF9B93" />
+                            </View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>{petParameters.adult_length ? 'Longitud Adulta' : 'Categoría de Tamaño'}</LatoText>
+                              {petParameters.adult_length ? (
+                                <LatoText style={styles.paramData}>
+                                  {typeof petParameters.adult_length === 'object' ? 
+                                   `${petParameters.adult_length.min}-${petParameters.adult_length.max} ${petParameters.adult_length.unit}` : 
+                                   petParameters.adult_length}
+                                  {petParameters.adult_length.notes && ` (${petParameters.adult_length.notes})`}
+                                </LatoText>
+                              ) : (
+                                <LatoText style={styles.paramData}>{petParameters.size_category}</LatoText>
+                              )}
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Temperamento */}
+                        {petParameters.temperament && (
+                           <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}>
+                              <MaterialCommunityIcons name="paw" size={20} color="#EF9B93" />
+                            </View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Temperamento</LatoText>
+                              {Array.isArray(petParameters.temperament) ? (
+                                petParameters.temperament.map((item, index) => (
+                                  <LatoText key={index} style={styles.paramListItem}>• {item}</LatoText>
+                                ))
+                              ) : (
+                                <LatoText style={styles.paramData}>{petParameters.temperament}</LatoText>
+                              )}
+                            </View>
+                          </View>
+                        )}
+                        
+                        {/* Dieta Primaria */}
+                        {(petParameters.primary_diet_type || petParameters.diet_type) && (
+                           <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}>
+                              <MaterialCommunityIcons name="food-apple-outline" size={20} color="#EF9B93" />
+                            </View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Tipo de Dieta Principal</LatoText>
+                              <LatoText style={styles.paramData}>{petParameters.primary_diet_type || petParameters.diet_type}</LatoText>
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Necesidades Sociales */}
+                        {petParameters.social_needs && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}>
+                              <MaterialCommunityIcons name="account-group-outline" size={20} color="#EF9B93" />
+                            </View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Necesidades Sociales</LatoText>
+                              {Array.isArray(petParameters.social_needs) ? 
+                                petParameters.social_needs.map((item, index) => <LatoText key={index} style={styles.paramListItem}>• {item}</LatoText>) :
+                                <LatoText style={styles.paramData}>{petParameters.social_needs}</LatoText>
+                              }
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Notas de Alojamiento / Tamaño Mínimo Recinto */}
+                        {(petParameters.housing_notes || petParameters.enclosure_min_size) && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}>
+                              <MaterialCommunityIcons name="home-city-outline" size={20} color="#EF9B93" />
+                            </View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>{petParameters.housing_notes ? 'Notas de Alojamiento' : 'Tamaño Mín. Recinto'}</LatoText>
+                              {petParameters.housing_notes && Array.isArray(petParameters.housing_notes) &&
+                                petParameters.housing_notes.map((item, index) => (
+                                  <LatoText key={index} style={styles.paramListItem}>• {item}</LatoText>
+                                ))}
+                              {petParameters.enclosure_min_size && <LatoText style={styles.paramData}>{petParameters.enclosure_min_size}</LatoText>}
+                            </View>
+                          </View>
+                        )}
+                        
+                        {/* Temperatura (Reptiles, Anfibios, Peces) */}
+                        {petParameters.temperature && renderComplexParameter('Temperatura', petParameters.temperature, 'thermometer')}
+
+                        {/* Humedad (Reptiles, Anfibios) */}
+                        {petParameters.humidity && renderComplexParameter('Humedad', petParameters.humidity, 'water-percent')}
+                        
+                        {/* Iluminación (Reptiles, Anfibios) */}
+                        {petParameters.lighting && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}>
+                              <MaterialCommunityIcons name="lightbulb-on-outline" size={20} color="#EF9B93" />
+                            </View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Iluminación</LatoText>
+                              {Array.isArray(petParameters.lighting) ? 
+                                petParameters.lighting.map((item, index) => <LatoText key={index} style={styles.paramListItem}>• {item}</LatoText>) :
+                                <LatoText style={styles.paramData}>{petParameters.lighting}</LatoText>
+                              }
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Parámetros Específicos de Peces */}
+                        {petParameters.min_tank_size && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}><MaterialCommunityIcons name="barrel" size={20} color="#EF9B93" /></View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Tamaño Mín. Acuario</LatoText>
+                              <LatoText style={styles.paramData}>{petParameters.min_tank_size.volume} {petParameters.min_tank_size.unit}</LatoText>
+                            </View>
+                          </View>
+                        )}
+                        {petParameters.ph && (
+                           <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}><MaterialCommunityIcons name="ph" size={20} color="#EF9B93" /></View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Rango de pH</LatoText>
+                              <LatoText style={styles.paramData}>{petParameters.ph.ideal_min} - {petParameters.ph.ideal_max}</LatoText>
+                            </View>
+                          </View>
+                        )}
+                        {petParameters.salinity && (
+                           <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}><MaterialCommunityIcons name="water-opacity" size={20} color="#EF9B93" /></View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Salinidad</LatoText>
+                              <LatoText style={styles.paramData}>{petParameters.salinity.ideal_min} - {petParameters.salinity.ideal_max} {petParameters.salinity.unit}</LatoText>
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Sustrato (Reptiles, Anfibios) */}
+                        {petParameters.substrate && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}><MaterialCommunityIcons name="shovel" size={20} color="#EF9B93" /></View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Sustrato Recomendado</LatoText>
+                              {Array.isArray(petParameters.substrate) ? 
+                                petParameters.substrate.map((item, index) => <LatoText key={index} style={styles.paramListItem}>• {item}</LatoText>) :
+                                <LatoText style={styles.paramData}>{petParameters.substrate}</LatoText>
+                              }
+                            </View>
+                          </View>
+                        )}
+                        
+                        {/* Necesidades de Agua (Anfibios) */}
+                        {petParameters.water_needs && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}><MaterialCommunityIcons name="water-well-outline" size={20} color="#EF9B93" /></View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Necesidades de Agua</LatoText>
+                              {Array.isArray(petParameters.water_needs) ? 
+                                petParameters.water_needs.map((item, index) => <LatoText key={index} style={styles.paramListItem}>• {item}</LatoText>) :
+                                <LatoText style={styles.paramData}>{petParameters.water_needs}</LatoText>
+                              }
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Notas de Salud (Hurones) */}
+                        {petParameters.health_notes && (
+                          <View style={styles.paramItemContainer}>
+                            <View style={styles.paramIconContainer}><MaterialCommunityIcons name="hospital-box-outline" size={20} color="#EF9B93" /></View>
+                            <View style={styles.paramTextContainer}>
+                              <LatoText style={styles.paramTitle}>Notas de Salud Importantes</LatoText>
+                              {Array.isArray(petParameters.health_notes) &&
+                                petParameters.health_notes.map((item, index) => (
+                                  <LatoText key={index} style={styles.paramListItem}>• {item}</LatoText>
+                                ))}
+                            </View>
+                          </View>
+                        )}
+
+                        {/* Otros parámetros que no encajan en categorías anteriores */}
+                        {Object.entries(petParameters)
+                          .filter(([key]) => ![
+                            'lifespan', 'weight', 'size_category', 'adult_length', 'temperament', 'primary_diet_type', 'diet_type',
+                            'social_needs', 'housing_notes', 'enclosure_min_size', 'temperature', 'humidity', 'lighting',
+                            'min_tank_size', 'ph', 'salinity', 'substrate', 'water_needs', 'health_notes', 'name'
+                          ].includes(key))
+                          .map(([key, value]) => (
+                            <View key={key} style={styles.paramItemContainer}>
+                               <View style={styles.paramIconContainer}><MaterialCommunityIcons name="information-outline" size={20} color="#EF9B93" /></View>
+                               <View style={styles.paramTextContainer}>
+                                  <LatoText style={styles.paramTitle}>{formatKeyToTitle(key)}</LatoText>
+                                  {typeof value === 'object' && value !== null ? (
+                                    <LatoText style={styles.paramData}>{JSON.stringify(value)}</LatoText>
+                                  ) : Array.isArray(value) ? (
+                                    value.map((item, idx) => <LatoText key={idx} style={styles.paramListItem}>• {item}</LatoText>)
+                                  ) : (
+                                    <LatoText style={styles.paramData}>{String(value)}</LatoText>
+                                  )}
+                               </View>
+                            </View>
+                         ))}
+                      </View>
+                      )
+                    ) : (
+                      <View style={styles.noDataTextContainer}>
+                        <MaterialCommunityIcons name="file-question-outline" size={40} color="#757575" style={{ marginBottom: 15 }} />
+                        <LatoText style={styles.noDataText}>
+                          No hay parámetros disponibles para {petData.name}.
+                        </LatoText>
+                        <LatoText style={styles.noDataSubText}>
+                          Esto puede deberse a que no se ha seleccionado una raza específica o la información aún no está cargada.
+                        </LatoText>
+                      </View>
+                    )}
+                  </>
                 )
               }
             </View>
@@ -192,9 +631,12 @@ const ManagePetScreen = ({route, navigation}) => {
       {!isLoading && petData !== null && 
         <Modal
           isVisible={isWeightModalVisible}
-          onBackdropPress={() => setIsWeightModalVisible(false)}
-          animationIn="slideInUp"
-          animationOut="slideOutDown"
+          onBackdropPress={() => !isDataLoading && setIsWeightModalVisible(false)}
+          onBackButtonPress={() => !isDataLoading && setIsWeightModalVisible(false)}
+          animationIn="zoomIn"
+          animationOut="zoomOut"
+          backdropTransitionOutTiming={0}
+          useNativeDriverForBackdrop
         >
           <View style={styles.modalContainer}>
             <LatoText style={styles.modalTitle}>Actualiza el peso</LatoText>
@@ -216,9 +658,12 @@ const ManagePetScreen = ({route, navigation}) => {
               <LatoText numberOfLines={1} style={styles.input}>Día: {formattedDateDayMonthYear(new Date(selectedDate))}</LatoText>
             </TouchableOpacity>
             <TouchableOpacity activeOpacity={0.8} style={styles.submitButton} onPress={() => handleChangeWeight()}>
-              <LatoText style={styles.submitButtonText}>Actualizar</LatoText>
+              {isDataLoading ? 
+              (<LatoText style={styles.submitButtonText}>Cargando...</LatoText>) 
+              : 
+              (<LatoText style={styles.submitButtonText}>Actualizar</LatoText>)}
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.8} onPress={() => setIsWeightModalVisible(false)}>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => !isDataLoading && setIsWeightModalVisible(false)}>
               <LatoText style={styles.closeText}>Cerrar</LatoText>
             </TouchableOpacity>
           </View>
@@ -229,6 +674,8 @@ const ManagePetScreen = ({route, navigation}) => {
         onBackdropPress={() => setShowDatePicker(false)}
         animationIn="slideInUp"
         animationOut="slideOutDown"
+        backdropTransitionOutTiming={0}
+        useNativeDriverForBackdrop
       >
         <View style={styles.modalContainer}>
           <DateTimePicker
@@ -252,6 +699,65 @@ const ManagePetScreen = ({route, navigation}) => {
     </SafeAreaView>
   )
 }
+
+/**
+ * Función para formatear una Key en un título legible
+ * @param {string} keyString - La Key a formatear
+ * @returns {string} - El título formateado
+ */
+const formatKeyToTitle = (keyString) => {
+  if (!keyString) return '';
+  const result = keyString.replace(/_/g, ' ');
+  return result.charAt(0).toUpperCase() + result.slice(1);
+};
+
+/**
+ * Componente para renderizar parámetros complejos
+ * @param {string} title - El título del parámetro
+ * @param {object} dataObject - El objeto de datos del parámetro
+ * @param {string} iconName - El nombre del icono a mostrar
+ * @param {string} unitOverride - La unidad a mostrar
+ * @returns 
+ */
+const renderComplexParameter = (title, dataObject, iconName, unitOverride = null) => {
+  if (!dataObject) return null;
+  const unit = unitOverride || dataObject.unit || '';
+  return (
+    <View style={styles.paramSection}>
+      <View style={styles.paramItemContainer}>
+        <View style={styles.paramIconContainer}>
+          <MaterialCommunityIcons name={iconName} size={20} color="#EF9B93" />
+        </View>
+        <View style={styles.paramTextContainer}>
+          <LatoText style={styles.paramTitle}>{title} {dataObject.unit ? `(${dataObject.unit})` : ''}</LatoText>
+          {Object.entries(dataObject).map(([key, value]) => {
+            if (key === 'unit' || key === 'notes') return null;
+            let displayValue = '';
+            if (typeof value === 'object' && value !== null && value.min !== undefined && value.max !== undefined) {
+              displayValue = `${value.min} - ${value.max} ${unit}`;
+            } else if (typeof value === 'object' && value !== null ) {
+              let subValues = [];
+              if (value.ideal_min !== undefined && value.ideal_max !== undefined) subValues.push(`Ideal: ${value.ideal_min}-${value.ideal_max}`);
+              if (value.min_acceptable !== undefined && value.max_acceptable !== undefined) subValues.push(`Aceptable: ${value.min_acceptable}-${value.max_acceptable}`);
+              displayValue = subValues.join(', ') + (subValues.length > 0 ? ` ${unit}` : '');
+              if (!displayValue && typeof value === 'object') displayValue = JSON.stringify(value);
+            }
+             else {
+              displayValue = `${value} ${key.toLowerCase().includes('min') || key.toLowerCase().includes('max') ? unit : ''}`;
+            }
+            return (
+              <View key={key} style={{ marginLeft: 5 }}>
+                <LatoText style={styles.paramDataNestedTitle}>{formatKeyToTitle(key)}:</LatoText>
+                <LatoText style={styles.paramDataNestedValue}>{displayValue}</LatoText>
+              </View>
+            );
+          })}
+          {dataObject.notes && <LatoText style={styles.paramNote}>Nota: {dataObject.notes}</LatoText>}
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   page: {
@@ -411,7 +917,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
-    gap: 5,
+    gap: 10,
   },
   inputContainer: {
     width: '90%',
@@ -470,6 +976,87 @@ const styles = StyleSheet.create({
     top: 10,
     fontSize: 14,
     color: '#242222',
+  },
+  noDataText: {
+    fontSize: 16,
+    color: '#242222',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  paramsContainer: {
+    width: '100%',
+    backgroundColor: '#F6F6F6',
+    padding: 20,
+    borderRadius: 15,
+    marginTop: 10,
+    gap: 18,
+    elevation: 3,
+    shadowColor: '#00000060',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  paramItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  paramIconContainer: {
+    width: 30,
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  paramTextContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  paramTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#191717',
+  },
+  paramData: {
+    fontSize: 15,
+    color: '#242222',
+    lineHeight: 20,
+  },
+  paramListItem: {
+    fontSize: 15,
+    color: '#555151',
+    marginLeft: 5,
+    lineHeight: 20,
+  },
+  fab: {
+    position: 'absolute',
+    minWidth: 150,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 20,
+    bottom: 20,
+    paddingHorizontal: 10,
+    backgroundColor: '#458AC3',
+    borderRadius: 28,
+    elevation: 5,
+    shadowColor: '#00000070',
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
+    flexDirection: 'row',
+    gap: 10,
+    zIndex: 5,
+  },
+  fabText: {
+    fontSize: 13,
+    color: '#FFF',
+  },
+  clickableText: {
+    fontSize: 16,
+    color: '#458AC3',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 

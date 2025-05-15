@@ -73,6 +73,14 @@ export const formattedDateDayMonthYear = (date) => {
     return dateOutput;
 };
 
+export const formattedDateAndTime = (date) => {
+  if (!date) return null;
+  const dateObject = new Date(date);
+  const hours = getTimeStampInHours(dateObject);
+
+  return `${getDayName(dateObject)} ${dateObject.getDate()}, ${getMonthName(dateObject)} de ${dateObject.getFullYear()} a las ${hours}`;
+};
+
 /**
  * Función para calcular la edad a partir de una fecha de nacimiento
  * @param bornDate - Fecha de nacimiento
@@ -210,3 +218,14 @@ export const getWeigthScore = (species, breed, weight) => {
     return 0;
   }
 };
+
+/**
+ * Función para verificar si una fecha es hoy
+ * @param date - Fecha a verificar 
+ * @returns - true si la fecha es hoy, false si no lo es
+ */
+export const isToday = (date) => {
+  const today = new Date();
+  const dateObj = new Date(date);
+  return dateObj.getDate() === today.getDate() && dateObj.getMonth() === today.getMonth() && dateObj.getFullYear() === today.getFullYear();
+}

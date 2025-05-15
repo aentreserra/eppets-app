@@ -14,6 +14,9 @@ import { STORAGE_KEYS } from '../../constants/storageKeys'
 import { storeItem, getItem } from '../../utils/storage'
 import { speciesOptions } from '../../constants/globals'
 import BreedData from '../../lib/breedsData.json';
+import loadingGif from '../../gifs/loading.gif'
+import { giveLevel } from '../../utils/levelManager'
+import { useLevelUpModal } from '../../context/LevelUpModalContext'
 
 const BUCKET_NAME = "eppets-4b8cb.firebasestorage.app";
 
@@ -28,14 +31,15 @@ const AddPetScreen = ({route, navigation}) => {
     name: '',
     species: null,
     breed: {value: '', name: ''},
-    weight: '',
-    bornDate: null,
+    weight: null,
+    bornDate: new Date(),
     gender: true,
     neutered: false,
     color: '',
     microchip: '',
   });
   const [isImageChanged, setIsImageChanged] = useState(false);
+  const [isDateChanged, setIsDateChanged] = useState(false);
   
   const [errors, setErrors] = useState('');
   const [isPrimate, setIsPrimate] = useState(false);
@@ -45,7 +49,8 @@ const AddPetScreen = ({route, navigation}) => {
   
   const [isEditing, setIsEditing] = useState(false);
   
-  const {user, refreshUser} = useUser();
+  const {user, refreshUser, updateUser} = useUser();
+  const {showLevelUpModal} = useLevelUpModal();
   const toast = useToast();
   const defaultDatePickerStyles = useDefaultStyles('light');
 
@@ -63,17 +68,21 @@ const AddPetScreen = ({route, navigation}) => {
         color: pet.color,
         microchip: pet.microchip,
       });
+      setIsDateChanged(true);
       setIsEditing(true);
     } else {
       setIsEditing(false);
     }
   }, [pet]);
 
+  /**
+   * Función para abrir el selector de imagen y seleccionar una imagen
+   */
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
-      toast.show('La aplicación no tiene permiso de camara', {type: 'danger'});
+      toast.show('La aplicación no tiene permiso de cámara', {type: 'danger'});
       return;
     }
 
@@ -90,6 +99,10 @@ const AddPetScreen = ({route, navigation}) => {
     }
   };
 
+  /**
+   * Función para manejar el paso siguiente, validar los datos,
+   * subir la imagen y guardar los datos de la mascota en el backend
+   */
   const handleNextStep = async () => {
     if (petData.name.length < 1) {
       toast.show('El nombre de la mascota es requerido', {type: 'danger'});
@@ -106,21 +119,23 @@ const AddPetScreen = ({route, navigation}) => {
         setStep(prev => prev + 1);
       }
 
-      let finalImageUrl = null;
+      // Variables para el estado y datos de la subida de la imagen
+      let finalImageUrl = isEditing && !isImageChanged ? petData.image.uri : null;
       let uploadAttempt = false;
       let isUploaded = false;
 
+      // Verificar si la imagen ha cambiado y si es necesario subirla
       if (petData.image !== null && petData.image.uri && isImageChanged) {
-        console.log('Uploading image...');
         uploadAttempt = true;
         const formattedImageData = {
           filename: petData.image.fileName,
           contentType: petData.image.mimeType,
         }
-        const response = await tokenRefreshWrapper('generateUploadUrl', formattedImageData, toast, user, refreshUser);
+        const response = await tokenRefreshWrapper('generateUploadUrl', formattedImageData, toast, user, refreshUser, updateUser, showLevelUpModal);
         if (response.success && response.signedUrl && response.filePath) {
           const signedUrl = response.signedUrl;
 
+          // Subimos la imagen con un fetch a la url firmada
           const uploaded = await fetch(petData.image.uri);
           if (!uploaded.ok) {
             toast.show('Error al subir la imagen', {type: 'danger'});
@@ -136,7 +151,7 @@ const AddPetScreen = ({route, navigation}) => {
             body: blob,
           });
 
-          if (uploadResponse.ok) {
+          if (uploadResponse.ok) { // Si la subida fue exitosa creamos la url de la imagen
             const encodedFilePath = encodeURIComponent(response.filePath);
             finalImageUrl = `https://firebasestorage.googleapis.com/v0/b/${BUCKET_NAME}/o/${encodedFilePath}?alt=media`;
             isUploaded = true;
@@ -151,6 +166,7 @@ const AddPetScreen = ({route, navigation}) => {
         }
       }
 
+      // Formateo de los datos para el backend
       const formattedData = {
         ...petData,
         imageUrl: isUploaded ? finalImageUrl : null,
@@ -159,7 +175,7 @@ const AddPetScreen = ({route, navigation}) => {
       };
 
       if (isEditing) {
-        const response = await tokenRefreshWrapper('updatePetProfile', {...formattedData, id: pet.id}, toast, user, refreshUser);
+        const response = await tokenRefreshWrapper('updatePetProfile', {...formattedData, id: pet.id}, toast, user, refreshUser, updateUser, showLevelUpModal);
 
         if (response.success) {
           const storedData = await getItem(STORAGE_KEYS.PETS_PROFILE);
@@ -176,18 +192,18 @@ const AddPetScreen = ({route, navigation}) => {
             microchip: petData.microchip,
             neutered: petData.neutered,
             weight: petData.weight,
-            image_url: isUploaded ? finalImageUrl : null,
+            image_url: finalImageUrl,
           }
 
           if (storedData) {
-            pets = JSON.parse(storedData);
+            pets = JSON.parse(storedData) || [];
           }
           const petIndex = pets.findIndex(item => item.id === pet.id);
           if (petIndex !== -1) {
             pets[petIndex] = {
               ...pets[petIndex],
               ...saveFormatted,
-            };   
+            };
           } else {
             pets.push({...saveFormatted, created_at: pet.created_at, last_visit: pet.last_visit});
           }
@@ -199,7 +215,7 @@ const AddPetScreen = ({route, navigation}) => {
         }
       } else {
         console.log('Creating new pet profile...'); 
-        const response = await tokenRefreshWrapper('createNewPetProfile', formattedData, toast, user, refreshUser);
+        const response = await tokenRefreshWrapper('createNewPetProfile', formattedData, toast, user, refreshUser, updateUser, showLevelUpModal);
 
         if (response.success) {
           console.log('Pet profile created successfully:', response); 
@@ -243,6 +259,10 @@ const AddPetScreen = ({route, navigation}) => {
     }
   };
 
+  /**
+   * Función para manejar la selección de la especie
+   * @param {object} item - El objeto de la especie seleccionada
+   */
   const handlePickSpecies = (item) => {
     setPetData({...petData, species: item.value});
     setStep(prev => prev + 1);
@@ -252,17 +272,41 @@ const AddPetScreen = ({route, navigation}) => {
     }
   }
 
+  /**
+   * Función para manejar el paso anterior
+   */
   const handleBack = () => {
     if (step > 0) {
       setStep(prev => prev - 1);
     }
   };
 
+  /**
+   * Función para verificar si la fecha es anterior a hoy
+   * @param {string} date - La fecha a comparar
+   * @returns {boolean} - true si la fecha es anterior a hoy, false si no
+   */
+  const isDateBeforeToday = (date) => {
+    const today = new Date();
+    const selectedDate = new Date(date);
+    return selectedDate < today;
+  };
+
+  /**
+   * Función para seleccionar la fecha si es anterior a hoy
+   * @param {string} date - La fecha a comparar
+   */
   const handleConfirmDateRange = (date) => {
+    if (!isDateBeforeToday(date)) return; 
     setPetData({...petData, bornDate: date});
+    setIsDateChanged(true);
     setIsDatePickerVisible(false);
   }
 
+  /**
+   * Función para obtener la fecha formateada en años
+   * @returns {string} - La fecha formateada
+   */
   const getDateFormatted = () => {
     if (!petData.bornDate) return 'Fecha de nacimiento';
     const bornDate = new Date(petData.bornDate);
@@ -279,6 +323,10 @@ const AddPetScreen = ({route, navigation}) => {
     return `${date} - (${age} ${age > 1 ? 'años' : age === 0 ? 'años' : 'año'})`;
   };
 
+  /**
+   * Función para generar el autocompletado de raza
+   * @param {string} text - El texto ingresado en el campo de raza
+   */
   const handleBreedTyping = (text) => {
     setPetData({...petData, breed: {...petData.breed, name: text}});
     if (text.length > 2) {
@@ -287,11 +335,19 @@ const AddPetScreen = ({route, navigation}) => {
     }
   };
 
+  /**
+   * Función para seleccionar la raza del autocompletado
+   * @param {object} item - El objeto de la raza seleccionada
+   */
   const selectBreed = (item) => {
     setPetData({...petData, breed: {name: item.name, value: item.value}});
     setFilteredBreeds([]);
   }
 
+  /**
+   * Función para obtener la unidad de peso de la raza seleccionada
+   * @returns {string} - La unidad de peso de la raza seleccionada
+   */
   const getWeightUnit = () => {
     try {
       return BreedData[petData.species].filter(item => item.value === petData.breed.value)[0].parameters.weight.unit || "kg"
@@ -340,7 +396,6 @@ const AddPetScreen = ({route, navigation}) => {
           ) 
           : step === 1 ? (
             <>
-              <LatoText style={styles.sectionTitle}>Selecciona la Especie</LatoText>
               <View style={styles.inputsRowContainer}>
                 {
                   speciesOptions.map((item, index) => (
@@ -372,15 +427,15 @@ const AddPetScreen = ({route, navigation}) => {
                     placeholder='Peso actual...'
                     editable={petData.species !== 'primate'}
                     keyboardType='numeric'
-                    value={petData.weight}
-                    onChangeText={text => setPetData({...petData, weight: text})}
+                    value={parseFloat(petData.weight)}
+                    onChangeText={text => setPetData({...petData, weight: parseFloat(text)})}
                     style={styles.input}
                   />
                   <LatoText style={styles.absoluteWeight}>{petData.breed.value.length > 1 && getWeightUnit()}</LatoText>
                 </View>
                 <TouchableOpacity activeOpacity={0.8} style={styles.inputContainer} onPress={() => petData.species !== 'primate' && setIsDatePickerVisible(true)}>
                   <MaterialCommunityIcons name="calendar" size={24} color="#242222" />
-                  <LatoText style={{color: '#242222'}}>{petData.bornDate === null ? "Fecha de nacimiento" : getDateFormatted()}</LatoText>
+                  <LatoText style={{color: '#242222'}}>{!isDateChanged ? "Fecha de nacimiento" : getDateFormatted()}</LatoText>
                 </TouchableOpacity>
                 <View style={styles.buttonsInputContainer}>
                   <TouchableOpacity activeOpacity={0.8} style={[styles.genderButton, {backgroundColor: petData.gender ? "#EF9B93" : "transparent"}]} onPress={() => setPetData({...petData, gender: true})}>
@@ -420,9 +475,10 @@ const AddPetScreen = ({route, navigation}) => {
             </>
           ) : step === 4 ? (
             <>
+              <Image source={loadingGif} style={styles.loadingGif} />
               <LatoText style={styles.updatingText}>{isEditing ? "Actualizando perfil..." : "Creando perfil..."}</LatoText>
-              <LatoText>Por favor, espera un momento.</LatoText>
-              <LatoText>Recuerda que puedes editar la información de tu mascota en cualquier momento.</LatoText>
+              <LatoText>Por favor, espera un momento</LatoText>
+              <LatoText style={styles.loadingText}>Recuerda que puedes editar la información de tu mascota en cualquier momento</LatoText>
             </>
           ) : (
             <View style={styles.inputsContainer}>
@@ -447,6 +503,8 @@ const AddPetScreen = ({route, navigation}) => {
         onBackButtonPress={() => setIsDatePickerVisible(false)}
         animationIn='fadeInUp'
         animationOut='fadeOutDown'
+        backdropTransitionOutTiming={0}
+        useNativeDriverForBackdrop
       >
         <View style={styles.modalContainer}>
         <DateTimePicker
@@ -471,6 +529,8 @@ const AddPetScreen = ({route, navigation}) => {
         isVisible={isPrimate}
         animationIn='fadeInUp'
         animationOut='fadeOutDown'
+        backdropTransitionOutTiming={0}
+        useNativeDriverForBackdrop
       >
         <View style={styles.modalContainer}>
           <MaterialCommunityIcons name="alert-circle-outline" size={50} color="#EF9B93" />
@@ -489,6 +549,9 @@ const AddPetScreen = ({route, navigation}) => {
   )
 }
 
+/**
+ * Componente para el autocompletado de razas
+ */
 const AutocompleteDropdown = ({data, onSelect}) => (
   <View style={styles.autocompleteContainer}>
     <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollViewAutocomplete}>
@@ -707,6 +770,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#191717',
     marginBottom: 10,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#242222',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  loadingGif: {
+    width: 120,
+    height: 120,
+    marginBottom: 5,
   },
 });
 

@@ -1,4 +1,4 @@
-import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, TextInput, TouchableOpacity, Keyboard } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LatoText from '../../components/Fonts/LatoText';
@@ -16,9 +16,7 @@ const RegisterScreen = ({navigation, route}) => {
 
   const {email} = route.params || {};
 
-  const {updateUser} = useUser();
-
-  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [userInput, setUserInput] = useState({
     username: '',
@@ -29,7 +27,14 @@ const RegisterScreen = ({navigation, route}) => {
 
   const [errors, setErrors] = useState('');
 
+  const {updateUser} = useUser();
+  const toast = useToast();
+
+  /**
+   * Función para registrar al usuario comprobando los datos de entrada
+   */
   const handleRegister = async () => {
+    Keyboard.dismiss();
     if (userInput.username.length < 3) {
       toast.show('El nombre de usuario debe tener al menos 3 caracteres', {type: 'danger'});
       setErrors('user');
@@ -51,42 +56,67 @@ const RegisterScreen = ({navigation, route}) => {
       return;
     }
 
-    const fcmToken = await firebase.messaging().getToken();
+    setIsLoading(true);
 
-    const formattedData = {
-      name: userInput.username,
-      email: userInput.email,
-      password: userInput.password,
-      fcm: fcmToken,
-    };
+    try {
+      const fcmToken = await firebase.messaging().getToken();
 
-    // TODO !! ENVIAR FCM TOKEN
-    const response = await callFirebaseFunction('createUserAttempt', formattedData, toast);
-
-    if (response.success) {
-      const userProfile = {
+      const formattedData = {
         name: userInput.username,
         email: userInput.email,
+        password: userInput.password,
+        fcm: fcmToken,
       };
 
-      await storeSecureItem(SECURE_STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
-      await storeItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(userProfile));
+      const response = await callFirebaseFunction('createUserAttempt', formattedData, toast);
 
-      updateUser({
-        ...userProfile,
-        accessToken: response.accessToken,
-        accessTokenExpiration: new Date().getTime() + 900000,
-      });
+      if (response.success) {
+        const userProfile = {
+          name: userInput.username,
+          email: userInput.email,
+          xp: 0,
+        };
 
-      navigation.replace('MainTabs');
+        await storeSecureItem(SECURE_STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
+        await storeItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(userProfile));
+
+        updateUser({
+          ...userProfile,
+          accessToken: response.accessToken,
+          accessTokenExpiration: new Date().getTime() + 900000,
+        });
+
+        navigation.replace('MainTabs');
+      } else {
+        if (response.message === 'User already exists') {
+          toast.show('El correo ya existe', {type: 'danger'});
+        } else {
+          toast.show('Error al crear la cuenta', {type: 'danger'});
+        }
+      }
+    } catch (error) {
+      console.log('Error: ', error);
+      toast.show('Error al crear la cuenta', {type: 'danger'});
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  /**
+   * Función para manejar el cambio de texto en los inputs
+   * @param {string} key - Key del input a actualizar
+   * @param {string} value - Valor del input a actualizar
+   */
   const handleChangeText = (key, value) => {
+    if (isLoading) return;
     setUserInput(prevState => ({...prevState, [key]: value}));
     setErrors('');
   };
 
+  /**
+   * Función para navegar a la pantalla de inicio de sesión
+   * guardando el email si es válido
+   */
   const handleGoToLogin = () => {
     if (emailChecker(userInput.email)) {
       navigation.navigate('Login', {email: userInput.email});
@@ -148,10 +178,10 @@ const RegisterScreen = ({navigation, route}) => {
         </View>
       </View>
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity activeOpacity={0.8} style={styles.submitButton} onPress={handleRegister}>
-          <LatoText style={styles.submitButtonText}>Registrarse</LatoText>
+        <TouchableOpacity activeOpacity={0.8} style={styles.submitButton} onPress={!isLoading && handleRegister}>
+          <LatoText style={styles.submitButtonText}>{isLoading ? 'Cargando...' : 'Registrarse'}</LatoText>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.8} style={styles.goToLoginButton} onPress={handleGoToLogin}>
+        <TouchableOpacity activeOpacity={0.8} style={styles.goToLoginButton} onPress={!isLoading && handleGoToLogin}>
           <LatoText style={styles.goToLoginButtonText}>¿Ya tienes cuenta? <LatoText style={styles.colorChange}>Inicia sesión</LatoText></LatoText>
         </TouchableOpacity>
       </View>

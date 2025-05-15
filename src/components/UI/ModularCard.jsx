@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import LatoText from '../Fonts/LatoText';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import ReminderItem from './ReminderItem';
+import ReminderModal from '../Modals/ReminderModal';
+import RemoveReminderModal from '../Modals/RemoveReminderModal';
 
 const ModularCard = ({title, icon, data, type, onClick, viewMoreClick}) => {
+
+  const [selectedReminder, setSelectedReminder] = useState(null);
+  const [isReminderInfoVisible, setIsReminderInfoVisible] = useState(false);
+  const [isRemoveReminderVisible, setIsRemoveReminderVisible] = useState(false);
+
   return (
     <View style={styles.container}>
+      <ReminderModal isVisible={isReminderInfoVisible} setIsVisible={setIsReminderInfoVisible} data={selectedReminder}/>
+      <RemoveReminderModal isVisible={isRemoveReminderVisible} data={selectedReminder} onClose={() => setIsRemoveReminderVisible(false)}/>
       <View style={styles.headerContainer}>
         <View style={styles.headerLeft}>
           {icon}
@@ -19,21 +29,18 @@ const ModularCard = ({title, icon, data, type, onClick, viewMoreClick}) => {
       </View>
       {
         type === 'reminders' ? (
-          data.length > 0 && 
-          data.map((item, index) => (
-            <View key={index}>
-              <View style={styles.reminderContainer}>
-                <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name={item.notiType === "pill" ? "pill" : item.notiType === "date" ? "calendar-heart" : "needle"} size={30} color="#EF9B93" />
-                </View>
-                <View>
-                  <LatoText style={styles.reminderTitle}>{item.title}</LatoText>
-                  <LatoText style={styles.reminderDesc}>{item.name} · {item.date}</LatoText>
-                </View>
+          <>
+          {data &&
+          data.slice(0,5).map((item, index) => {
+            return (
+              <View key={item.id}>
+                <ReminderItem item={item} isManagePet={false} onClick={() => [setIsReminderInfoVisible(true), setSelectedReminder(item)]} onLongPress={() => [setIsRemoveReminderVisible(true), setSelectedReminder(item)]} />
+                {index < data.slice(0,5).length - 1 && (<View style={styles.devider}/>)}
               </View>
-              {index < data.length - 1 && (<View style={styles.devider}/>)}
-            </View>
-          ))
+            )
+          })}
+          {(!data || data.length < 1)&& (<LatoText style={styles.pictureText}>No tienes recordatorios hoy</LatoText>)}
+          </>
         ) : 
         type === 'picture' ? (
           <View style={styles.pictureContainer}>

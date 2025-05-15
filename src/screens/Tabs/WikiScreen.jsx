@@ -4,22 +4,45 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import LatoText from '../../components/Fonts/LatoText'
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import AddFoodModal from '../../components/Modals/AddFoodModal';
+import dogImage from '../../images/Wiki/dog_image.jpg';
+import catImage from '../../images/Wiki/cat_image.jpg';
+import birdImage from '../../images/Wiki/bird_image.jpg';
+import fishImage from '../../images/Wiki/fish_image.jpg';
+import ferretImage from '../../images/Wiki/ferret_image.jpg';
+import rodentImage from '../../images/Wiki/rodent_image.jpg';
+import reptileImage from '../../images/Wiki/reptile_image.jpg';
+import amphibianImage from '../../images/Wiki/amphibian_image.jpg';
+import rabbitImage from '../../images/Wiki/rabbit_image.jpg';
 
 import foodData from '../../lib/foodList.json';
 
 const labels = {
   dog: 'Perros',
   cat: 'Gatos',
+  bird: 'Aves',
+  fish: 'Peces',
   rabbit: 'Conejos',
   rodent: 'Roedores',
-  fish: 'Peces',
-  turtle: 'Tortugas',
-  bird: 'Aves'
+  ferret: 'Hurones',
+  reptile: 'Reptiles',
+  amphibian: 'Anfibios',
 };
 
 const foodList = foodData;
 
-const WikiScreen = () => {
+const animalList = [
+    { name: 'Perros', value: 'dog', image: dogImage },
+    { name: 'Gatos', value: 'cat', image: catImage },
+    { name: 'Aves', value: 'bird', image: birdImage },
+    { name: 'Peces', value: 'fish', image: fishImage },
+    { name: 'Conejos', value: 'rabbit', image: rabbitImage },
+    { name: 'Roedores', value: 'rodent', image: rodentImage },
+    { name: 'Hurones', value: 'ferret', image: ferretImage },
+    { name: 'Reptiles', value: 'reptile', image: reptileImage },
+    { name: 'Anfibios', value: 'amphibian', image: amphibianImage },
+];
+
+const WikiScreen = ({navigation}) => {
 
   const [wikiPage, setWikiPage] = useState(0);
 
@@ -27,12 +50,14 @@ const WikiScreen = () => {
 
   const [searchText, setSearchText] = useState('');
 
-  const [animalList, setAnimalList] = useState([{name: "Perros", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Gatos", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Aves Psitácidas", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Cobayas", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Conejos", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Erizos", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Chinchillas", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Serpientes", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Hurones", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Iguanas", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Tortugas", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Geckos", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Ratones", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}, {name: "Hámsters", image: "https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg"}]);
-
 
   const [animalListFiltered, setAnimalListFiltered] = useState([]);
   const [foodListFiltered, setFoodListFiltered] = useState([]);
 
+  /**
+   * Función para manejar el cambio de pestaña en la wiki
+   * @param {number} index - 0 para animales, 1 para alimentos
+   */
   const handleChangeTab = (index) => {
     setWikiPage(index);
     setSearchText('');
@@ -40,6 +65,10 @@ const WikiScreen = () => {
     setFoodListFiltered([]);
   };
 
+  /**
+   * Función para manejar la búsqueda de animales o alimentos
+   * @param {string} text - Texto de búsqueda
+   */
   const handleSearch = (text) => {
     setSearchText(text);
 
@@ -51,7 +80,6 @@ const WikiScreen = () => {
       setAnimalListFiltered(filteredAnimals);
     }
     else {
-      // Perform search for food
       let petName = "";
       for (const [key, value] of Object.entries(labels)) {
         if (value.normalize("NFD").toLowerCase().includes(text.normalize("NFD").toLowerCase())) {
@@ -64,6 +92,46 @@ const WikiScreen = () => {
       setFoodListFiltered(filteredFood);
     }
   }
+
+  /**
+   * Componente para mostrar un elemento de animal
+   */
+  const AnimalItem = ({ name, value, image }) => (
+    <TouchableOpacity activeOpacity={0.8} style={styles.animalItemContainer} onPress={() => navigation.navigate('WikiInfo', {animal: value})}>
+      <Image source={image} style={styles.animalImage} resizeMode="contain" />
+      <LatoText style={styles.animalName}>{name}</LatoText>
+    </TouchableOpacity>
+  );
+
+  /**
+   * Componente para mostrar un elemento de alimento
+   */
+  const FoodItem = (item) => {
+    const getFoodDesc = () => {  
+      const safePets = [];
+      for (const [key, value] of Object.entries(labels)) {
+        const foodItem = foodList.find(food => food.name === item.name);
+        if (foodItem[key]) {
+          safePets.push(value);
+        }
+      }
+    
+      return safePets.length
+        ? `Seguro para: ${safePets.join(', ')}`
+        : 'No recomendado para mascotas';
+    };
+    return (
+      <View style={styles.foodItemContainer}>
+        <View style={styles.imageContainer}>
+          <MaterialCommunityIcons name={item.image} size={30} color="#EF9B93"/>
+        </View>
+        <View style={styles.textContainer}>
+          <LatoText style={styles.foodItemName}>{item.name}</LatoText>
+          <LatoText style={styles.foodItemDesc}>{getFoodDesc(item.name)}</LatoText>
+        </View>
+      </View>
+    )
+  };
 
   return (
     <SafeAreaView style={styles.page}>
@@ -78,14 +146,14 @@ const WikiScreen = () => {
             style={[styles.wikiPickerItem, {backgroundColor: wikiPage === 0 ? "#458AC3" : "#F6F6F6"}]}
             onPress={() => handleChangeTab(0)}
           >
-            <LatoText style={[styles.wikiPickerText, {color: wikiPage === 0 ? "#FFF" : "#000"}]}>Animales</LatoText>
+            <LatoText style={[styles.wikiPickerText, {color: wikiPage === 0 ? "#FFF" : "#191717"}]}>Animales</LatoText>
           </TouchableOpacity>
           <TouchableOpacity 
             activeOpacity={0.9} 
             style={[styles.wikiPickerItem, {backgroundColor: wikiPage === 1 ? "#458AC3" : "#F6F6F6"}]}
             onPress={() => handleChangeTab(1)}
           >
-            <LatoText style={[styles.wikiPickerText, {color: wikiPage === 1 ? "#FFF" : "#000"}]}>Alimentos</LatoText>
+            <LatoText style={[styles.wikiPickerText, {color: wikiPage === 1 ? "#FFF" : "#191717"}]}>Alimentos</LatoText>
           </TouchableOpacity>
         </View>
         <View style={styles.searchBarContainer}>
@@ -106,14 +174,14 @@ const WikiScreen = () => {
                   searchText.length > 2 ? (
                     animalListFiltered.length > 0 ? (
                       animalListFiltered.map((item, index) => (
-                        <AnimalItem key={index} name={item.name} image={item.image} />
+                        <AnimalItem key={index} name={item.name} value={item.value} image={item.image} />
                       ))
                     ) : (
                       <LatoText style={styles.notFound}>No se encontraron resultados</LatoText>
                     )
                   ) : (
                     animalList.map((item, index) => (
-                      <AnimalItem key={index} name={item.name} image={item.image} />
+                      <AnimalItem key={index} name={item.name} value={item.value} image={item.image} />
                     ))
                   )
                 }
@@ -149,40 +217,6 @@ const WikiScreen = () => {
   )
 }
 
-const AnimalItem = ({ name, image }) => (
-  <TouchableOpacity activeOpacity={0.8} style={styles.animalItemContainer}>
-    <Image source={{uri: image}} style={styles.animalImage} />
-    <LatoText style={styles.animalName}>{name}</LatoText>
-  </TouchableOpacity>
-);
-
-const FoodItem = (item) => {
-  const getFoodDesc = () => {  
-    const safePets = [];
-    for (const [key, value] of Object.entries(labels)) {
-      const foodItem = foodList.find(food => food.name === item.name);
-      if (foodItem[key]) {
-        safePets.push(value);
-      }
-    }
-  
-    return safePets.length
-      ? `Seguro para: ${safePets.join(', ')}`
-      : 'No recomendado para mascotas';
-  };
-  return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.foodItemContainer}>
-      <View style={styles.imageContainer}>
-        <MaterialCommunityIcons name={item.image} size={30} color="#EF9B93"/>
-      </View>
-      <View style={styles.textContainer}>
-        <LatoText style={styles.foodItemName}>{item.name}</LatoText>
-        <LatoText style={styles.foodItemDesc}>{getFoodDesc(item.name)}</LatoText>
-      </View>
-    </TouchableOpacity>
-  )
-};
-
 const styles = StyleSheet.create({
   page: {
     flex: 1,
@@ -216,6 +250,7 @@ const styles = StyleSheet.create({
   },
   wikiPickerText: {
     fontSize: 16,
+    color: '#191717',
   },
   searchBarContainer: {
     width: '100%',
@@ -242,6 +277,7 @@ const styles = StyleSheet.create({
   },
   wikiResultContainer: {
     width: '100%',
+    height: '100%',
     marginTop: 20,
     marginBottom: 55,
   },
@@ -250,6 +286,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
+    alignItems: 'center',
     gap: 10,
   },
   wikiFoodContainer: {
@@ -265,10 +302,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   animalImage: {
-    width: '85%',
+    width: '100%',
+    height: 160,
     aspectRatio: 1,
     borderRadius: 6,
-    marginRight: 10,
     overflow: 'hidden',
   },
   animalName: {

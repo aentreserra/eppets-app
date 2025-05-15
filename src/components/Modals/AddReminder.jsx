@@ -21,6 +21,7 @@ import { getItem, storeItem } from '../../utils/storage';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
 import { tokenRefreshWrapper } from '../../services/tokenRefreshWrapper';
 import { useUser } from '../../context/UserContext';
+import { useLevelUpModal } from '../../context/LevelUpModalContext';
 
 const { height } = Dimensions.get('window');
 
@@ -63,10 +64,12 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
   const [showSummary, setShowSummary] = useState(false);
 
   const [errors, setErrors] = useState('');
+  const [isDataLoading, setIsDataLoading] = useState(false);
 
   const defaultDatePickerStyles = useDefaultStyles('light');
   const toast = useToast();
-  const {user,refreshUser} = useUser();
+  const {user,refreshUser, updateUser} = useUser();
+  const {showLevelUpModal} = useLevelUpModal();
 
   useEffect(() => {
     getLocalData();
@@ -101,10 +104,6 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo(p);
     }
-  };
-
-  const handleOnScroll = (e) => {
-    setScrollOffset(e.nativeEvent.contentOffset.y);
   };
 
   const closeModal = () => {
@@ -257,12 +256,18 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
   };
 
   const handleSaveAndClose = async () => {
+    console.log('Saving reminder...');
     const recurrenceRule = buildRecurrence();
 
     if (recurrenceRule === null) {
+      console.log('Recurrence rule is null, skipping saving reminder.');
       setErrors('recurrence');
       return;
     }
+
+    console.log('Recurrence Rule:', recurrenceRule);
+
+    setIsDataLoading(true);
     let triggerDateTimeUTC = null;
 
     if (selectedRange.startDate && selectedTime) {
@@ -298,27 +303,42 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
 
     console.log('Reminder Data:', reminderData);
 
-    const response = await tokenRefreshWrapper('addReminder', reminderData, toast, user, refreshUser);
+    try {
+      const response = await tokenRefreshWrapper('addReminder', reminderData, toast, user, refreshUser, updateUser, showLevelUpModal);
 
-    if (response.success) {
-      const savedReminders = await getItem(STORAGE_KEYS.REMINDERS);
+      if (response.success) {
+        const formattedReminder = {
+          id: response.reminderId,
+          pet_id: selectedPetId?.value,
+          title,
+          body: description,
+          reminder_type: selectedTypeId?.value,
+          trigger_datetime_utc: triggerDateTimeUTC,
+          recurrence_rule: recurrenceRule,
+          next_trigger_datetime_utc: triggerDateTimeUTC,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          instructions,
+        };
 
-      const parsedReminders = savedReminders ? JSON.parse(savedReminders) : [];
-      let newReminders = [];
-      if (savedReminders) {
-        newReminders = [...parsedReminders, reminderData];
-      } else {
-        newReminders = [reminderData];
-      }
+        let userReminders = user.reminders || [];
 
-      await storeItem(STORAGE_KEYS.REMINDERS, JSON.stringify(newReminders));
+        userReminders.push(formattedReminder);
 
-      toast.show('Recordatorio guardado', { type: 'success' });
+        updateUser({ 
+          ...user,
+          reminders: userReminders,
+        });
   
-      setShowSummary(false);
-      closeModal();
-    } else {
-      toast.show('Error al guardar el recordatorio', { type: 'danger' });
+        toast.show('Recordatorio guardado', { type: 'success' });
+    
+        setShowSummary(false);
+        closeModal();
+      } else {
+        toast.show('Error al guardar el recordatorio', { type: 'danger' });
+      }
+    } finally {
+      setIsDataLoading(false);
     }
   };
 
@@ -326,12 +346,15 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
     <Modal
       isVisible={isVisible}
       onBackdropPress={closeModal}
+      onBackButtonPress={closeModal}
       propagateSwipe={true}
       style={styles.modalContainer}
       animationIn='fadeInUp'
       animationOut='fadeOutDown'
       scrollTo={handleScrollTo}
       scrollOffset={scrollOffset}
+      backdropTransitionOutTiming={0}
+      useNativeDriverForBackdrop
     >
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -340,7 +363,7 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
           style={styles.scrollViewStyle}
           contentContainerStyle={styles.scrollViewContent}
         >
-          <View style={[styles.modalContent, { height: height * 0.9 }]}>
+          <View style={styles.modalContent}>
             <LatoText style={styles.title}>Añadir recordatorio</LatoText>
 
             {/* CAMPOS BÁSICOS */}
@@ -416,7 +439,14 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
                   <LatoText style={styles.inputButtonText}>{`Fin: ${getDayName(selectedRange.endDate)}, ${selectedRange.endDate.getDate()} de ${getMonthName(selectedRange.endDate)}`}</LatoText>
                 )}
               </TouchableOpacity>
-              <Modal isVisible={isDatePickerVisible} onBackdropPress={() => setDatePickerVisible(false)} animationIn='fadeIn' animationOut='fadeOut'>
+              <Modal 
+                isVisible={isDatePickerVisible}
+                onBackdropPress={() => setDatePickerVisible(false)}
+                animationIn='fadeIn'
+                animationOut='fadeOut'
+                backdropTransitionOutTiming={0}
+                useNativeDriverForBackdrop
+              >
                 <View style={styles.subModalContainer}>
                   <DateTimePicker
                     mode={(selectedTypeId?.value === 0 || !selectedTypeId) ? 'range' : 'single'}
@@ -584,15 +614,18 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
         </ScrollView>
       <Modal
         isVisible={showSummary}
-        onBackdropPress={() => setShowSummary(false)}
+        onBackdropPress={() => !isDataLoading && setShowSummary(false)}
+        onBackButtonPress={() => !isDataLoading && setShowSummary(false)}
         animationIn='fadeIn'
         animationOut='fadeOut'
+        backdropTransitionOutTiming={0}
+        useNativeDriverForBackdrop
         style={styles.summaryModalContainer}
       >
         <View style={styles.summaryModalBox}>
           <LatoText style={styles.title}>Resumen del Recordatorio</LatoText>
           <LatoText style={styles.normalText}>Título: <LatoText style={styles.bold}>{title}</LatoText></LatoText>
-          {description.length > 0 && <LatoText style={styles.normalText}>Descripción: {description}</LatoText>}
+          {description.length > 0 && <LatoText style={styles.normalText}>Descripción:  <LatoText style={styles.bold}>{description}</LatoText></LatoText>}
           <LatoText style={styles.normalText}>Mascota: <LatoText style={styles.bold}>{selectedPetId?.label}</LatoText></LatoText>
           <LatoText style={styles.normalText}>Tipo: <LatoText style={styles.bold}>{selectedTypeId?.label}</LatoText></LatoText>
           <LatoText style={styles.normalText}>Fecha: <LatoText style={styles.bold}>{getDayName(selectedRange.startDate)}, {selectedRange.startDate.getDate()} de {getMonthName(selectedRange.startDate)}</LatoText></LatoText>
@@ -603,10 +636,13 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
           {recurrenceType?.value === 'daily_multiple' && <LatoText style={styles.normalText}>Cada: <LatoText style={styles.bold}>{hourlyInterval} hora(s)</LatoText></LatoText>}
           {recurrenceType?.value === 'monthly' && <LatoText style={styles.normalText}>Cada: <LatoText style={styles.bold}>{interval} mes(es)</LatoText></LatoText>}
           {recurrenceType?.value === 'anually' && <LatoText style={styles.normalText}>Cada: <LatoText style={styles.bold}>{interval} año(s)</LatoText></LatoText>}
-          <TouchableOpacity activeOpacity={0.9} onPress={handleSaveAndClose} style={styles.saveButton}>
-            <LatoText style={styles.saveButtonText}>Aceptar</LatoText>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => !isDataLoading && handleSaveAndClose()} style={styles.saveButton}>
+            {isDataLoading ? 
+            (<LatoText style={styles.saveButtonText}>Cargando...</LatoText>) 
+            : 
+            (<LatoText style={styles.saveButtonText}>Aceptar</LatoText>)}
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.9} onPress={() => setShowSummary(false)}>
+          <TouchableOpacity activeOpacity={0.9} onPress={() => !isDataLoading && setShowSummary(false)}>
             <LatoText style={styles.closeText}>Editar</LatoText>
           </TouchableOpacity>
         </View>

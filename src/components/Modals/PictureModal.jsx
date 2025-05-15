@@ -11,7 +11,7 @@ import { getItem, storeItem } from '../../utils/storage';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
 import LatoText from '../Fonts/LatoText';
 
-const PictureModal = ({isVisible, setIsVisible}) => {
+const PictureModal = ({isVisible, setIsVisible, dailyPhotoDone, onPhotoDone}) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -98,7 +98,7 @@ const PictureModal = ({isVisible, setIsVisible}) => {
       const newPhotoMetadata = {
         id: photoUri,
         uri: photoUri,
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString(),
       };
 
       const updatedPhotos = [...parsedData, newPhotoMetadata];
@@ -113,6 +113,11 @@ const PictureModal = ({isVisible, setIsVisible}) => {
   };
 
   const handleStartProcess = async (selection) => {
+    if (dailyPhotoDone) {
+      toast.show('Ya has tomado la foto de hoy', {type: 'danger'});
+      setIsVisible(false);
+      return;
+    }
     const tempUri = selection === "camera" ? await takePhoto() : await getImageFromGallery();
     if (!tempUri) return;
 
@@ -124,6 +129,8 @@ const PictureModal = ({isVisible, setIsVisible}) => {
       if (photoUri) {
         await savePhotoMetadata(photoUri);
         toast.show('Foto guardada correctamente', {type: 'success'});
+        
+        if (onPhotoDone) onPhotoDone();
         
         setIsVisible(false);
       }
@@ -143,6 +150,8 @@ const PictureModal = ({isVisible, setIsVisible}) => {
       animationIn='fadeInUp'
       animationOut='fadeOutDown'
       style={styles.modal}
+      backdropTransitionOutTiming={0}
+      useNativeDriverForBackdrop
     >
       <View style={styles.modalContent}>
         {isLoading && (<LatoText style={styles.loadingText}>Guardando foto...</LatoText>)}

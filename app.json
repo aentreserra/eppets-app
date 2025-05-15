@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "eppets-app",
+    "name": "Eppets",
     "slug": "eppets-app",
     "scheme": "eppets",
     "version": "1.0.0",
@@ -9,7 +9,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/Splash-screen.jpg",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#458AC3"
     },
@@ -31,7 +31,12 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
       ],
-      "versionCode": 1
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "google_maps_api_key"
+        }
+      }
     },
     "plugins": [
       "expo-font",
@@ -43,6 +48,13 @@
           "ios": {
             "useFrameworks": "static"
           }
+        }
+      ],
+      "expo-quick-actions",
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
         }
       ]
     ]

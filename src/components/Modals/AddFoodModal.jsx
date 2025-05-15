@@ -27,6 +27,8 @@ const AddFoodModal = ({searchTerm, isVisible, setIsVisible}) => {
       onSwipeComplete={() => setIsVisible(false)}
       propagateSwipe={true}
       style={styles.modalContainer}
+      backdropTransitionOutTiming={0}
+      useNativeDriverForBackdrop
     >
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView showsVerticalScrollIndicator={false}>

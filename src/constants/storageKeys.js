@@ -6,6 +6,9 @@ export const STORAGE_KEYS = {
   PETS_PROFILE : 'eppets-petsProfile',
   DAILY_PHOTOS : 'eppets-dailyPhotos',
   REMINDERS : 'eppets-reminders',
+  NOTIFICATIONS: 'eppets-notifications',
+  LOCAL_EVENTS: 'eppets-localEvents',
+  MEDICAL_RECORDS: 'eppets-medicalRecords',
 };
 
 export const SECURE_STORAGE_KEYS = {
