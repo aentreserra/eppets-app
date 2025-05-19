@@ -46,10 +46,12 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
 
   const [errors, setErrors] = useState('');
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [scrollOffset, setScrollOffset] = useState(0);
   const scrollViewRef = useRef(null);
 
-  const defaultDatePickerStyles = useDefaultStyles();
+  const defaultDatePickerStyles = useDefaultStyles('light');
   const toast = useToast();
   const {user, refreshUser, updateUser} = useUser();
   const {showLevelUpModal} = useLevelUpModal();
@@ -120,6 +122,8 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
       return;
     }
 
+    setIsLoading(true);
+
     let formattedBody;
 
     try {
@@ -133,7 +137,6 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
         title: userInput.eventName,
         description: userInput.eventDescription,
         body: formattedBody,
-        notes: "",
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
         eventDatetime: convertFullTime(),
@@ -158,6 +161,8 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
     } catch (error) {
       console.log('Error al guardar el evento', error);
       toast.show('Error inesperado', {type: 'danger'});
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -190,9 +195,9 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
   return (
     <Modal
       isVisible={isVisible}
-      onBackdropPress={() => setIsVisible(false)}
+      onBackdropPress={() => !isLoading && setIsVisible(false)}
       swipeDirection={isSelectingLocation ? null : "down"}
-      onSwipeComplete={() => setIsVisible(false)}
+      onSwipeComplete={() => !isLoading && setIsVisible(false)}
       propagateSwipe={true}
       scrollTo={handleScrollTo}
       scrollOffset={scrollOffset}
@@ -359,10 +364,10 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
               )
             }
             <View style={styles.buttonsContainer}>
-              <TouchableOpacity activeOpacity={0.9} onPress={handelSubmit} style={styles.saveButton}>
-                <LatoText style={styles.saveButtonText}>Guardar</LatoText>
+              <TouchableOpacity activeOpacity={0.9} onPress={() => !isLoading && handelSubmit()} style={styles.saveButton}>
+                <LatoText style={styles.saveButtonText}>{isLoading ? "Cargando..." : "Guardar"}</LatoText>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.9} onPress={handleClose}>
+              <TouchableOpacity activeOpacity={0.9} onPress={() => !isLoading && handleClose()}>
                 <LatoText style={styles.closeText}>Cerrar</LatoText>
               </TouchableOpacity>
             </View>
