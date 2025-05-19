@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LatoText from '../../components/Fonts/LatoText'
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
-import AddFoodModal from '../../components/Modals/AddFoodModal';
 import dogImage from '../../images/Wiki/dog_image.jpg';
 import catImage from '../../images/Wiki/cat_image.jpg';
 import birdImage from '../../images/Wiki/bird_image.jpg';
@@ -46,10 +45,7 @@ const WikiScreen = ({navigation}) => {
 
   const [wikiPage, setWikiPage] = useState(0);
 
-  const [isVisible, setIsVisible] = useState(false);
-
   const [searchText, setSearchText] = useState('');
-
 
   const [animalListFiltered, setAnimalListFiltered] = useState([]);
   const [foodListFiltered, setFoodListFiltered] = useState([]);
@@ -135,7 +131,6 @@ const WikiScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.page}>
-      <AddFoodModal searchTerm={searchText} isVisible={isVisible} setIsVisible={setIsVisible}/>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <LatoText style={styles.title}>Wiki</LatoText>
@@ -197,9 +192,6 @@ const WikiScreen = ({navigation}) => {
                     ) : (
                       <>
                         <LatoText style={styles.notFound}>No se encontraron resultados</LatoText>
-                        <TouchableOpacity activeOpacity={0.5} onPress={() => setIsVisible(true)} >
-                          <LatoText style={styles.notFoundAdd}>¡Añade el alimento!</LatoText>
-                        </TouchableOpacity>
                       </>
                     )
                     ) : (

@@ -140,11 +140,13 @@ const HomeScreen = ({navigation}) => {
    */
   const reloadLocalReminders = async () => {
     const reminders = user.reminders || [];
-    const todayReminders = reminders.filter(reminder => {
-      const _isToday = isToday(reminder.next_trigger_datetime_utc);
-      return _isToday;
-    });
-    setTodayReminders(todayReminders);
+    if (reminders.length > 0) {
+      const todayReminders = reminders.filter(reminder => {
+        const _isToday = isToday(reminder.next_trigger_datetime_utc);
+        return _isToday;
+      });
+      setTodayReminders(todayReminders);
+    }
   };
 
   /**
