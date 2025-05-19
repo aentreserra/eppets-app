@@ -18,7 +18,7 @@ import { markdownStyles } from '../../constants/globals';
 
 const { height } = Dimensions.get('window');
 
-const AddCommunityModal = ({isVisible, setIsVisible}) => {
+const AddCommunityModal = ({isVisible, setIsVisible, onClose}) => {
 
   const [isSelectingIcon, setIsSelectingIcon] = useState(false);
   const [isSelectingLocation, setIsSelectingLocation] = useState(false);
@@ -140,7 +140,7 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
         eventDatetime: convertFullTime(),
-        maxAttendees: maxAttendees ? parseInt(userInput.maxAttendees) : null,
+        maxAttendees: userInput.maxAttendees ? parseInt(userInput.maxAttendees) : null,
         iconName: userInput.eventIcon,
         address: locationStreet,
       };
@@ -149,6 +149,7 @@ const AddCommunityModal = ({isVisible, setIsVisible}) => {
 
       if (response.success) {
         toast.show('Evento creado con éxito', {type: 'success'});
+        onClose();
         handleClose();
       } else {
         if (response.message === "Missing required fields") {

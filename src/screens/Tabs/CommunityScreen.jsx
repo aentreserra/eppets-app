@@ -174,6 +174,14 @@ const CommunityScreen = ({navigation}) => {
   };
 
   /**
+   * Función para cargar los datos de los eventos una vez añadido
+   */
+  const handleCloseModal = async () => {
+    await fetchCommunityData();
+    await fetchOwnedEvents();
+  };
+
+  /**
    * Componente para mostrar los eventos de la comunidad
    */
   const Item = ({ id, icon, title, description, distance, timestamp }) => (
@@ -193,7 +201,7 @@ const CommunityScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.page}>
-      <AddCommunityModal isVisible={isAddCommunityModalVisible} setIsVisible={setIsAddCommunityModalVisible}/>
+      <AddCommunityModal isVisible={isAddCommunityModalVisible} setIsVisible={setIsAddCommunityModalVisible} onClose={handleCloseModal}/>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollView}>
         <View style={styles.headerContainer}>
           <LatoText style={styles.title}>Eventos Comunidad</LatoText>
