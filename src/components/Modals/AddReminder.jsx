@@ -176,7 +176,7 @@ const AddReminder = ({isVisible, setIsVisible, defaultPet = null, defaultDay = n
 
     // Obtener el valor de frecuencia correspondiente al tipo de recurrencia seleccionado
     const freq = baseFreqMap[recurrenceType.value];
-    if (!freq) return null; // Si no hay frecuencia, devolvemos null
+    if (!freq) return 'FREQ=NONE'; // Si no hay frecuencia, devolvemos NONE
 
     // Construir la regla de recurrencia
     let ruleParts = [`FREQ=${freq}`];
