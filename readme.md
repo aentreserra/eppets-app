@@ -23,3 +23,11 @@
 - **Navegación**: React Navigation (Stack y Tabs)
 
 ---
+
+## ⚠ Requerimentos para usaa
+
+**Para poder ejecutar correctamente la aplicación, asegurate de tener lo siguiente:**
+
+1. **Clave API Google Maps**: Se necesita una clave api de google maps, pudiendo obtenerla desde Google Cloud Console. La clave es necesaria en app.json.
+2. **Archivo de configuración de Firebase**: Se requiere el archivo de configuración de Firebase para poder acceder a las funciones de backend.
+3. **Prebuild**: El proyecto requiere paquetes de código nativo, así que es necesario el uso de prebuild para su funcionamiento.
